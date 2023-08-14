@@ -1,27 +1,21 @@
-# Membrane Template Plugin
 
-[![Hex.pm](https://img.shields.io/hexpm/v/membrane_template_plugin.svg)](https://hex.pm/packages/membrane_template_plugin)
-[![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_template_plugin)
-[![CircleCI](https://circleci.com/gh/membraneframework/membrane_template_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_template_plugin)
+## Compile Agora SDK Samples（For Linux）
 
-This repository contains a template for new plugins.
+```
+$ ./build.sh
+$ ./sync-data.sh
 
-Check out different branches for other flavours of template.
-
-It is part of [Membrane Multimedia Framework](https://membraneframework.org).
-
-## Installation
-
-The package can be installed by adding `membrane_template_plugin` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:membrane_template_plugin, "~> 0.1.0"}
-  ]
-end
+Upon successful compilation, there are a couple of **sample_xxx"" excutables in out folder
+Also, download the media files by running sync-data.sh script. These audio/video files will be used together with the sample code.
 ```
 
-## Usage
 
-TODO
+## Run Agora SDK Samples
+
+**sample_send_aac** reads from an AAC file and sends the AAC stream to Agora channel
+
+#### Example:
+```
+To send aac stream to Agora channel named "demo_channel". Note that `xxxxxx` should be replaced with your own App ID or token
+$ out/sample_send_aac --token XXXXXX --channelId demo_channel --audioFile test_data/send_audio.aac
+```

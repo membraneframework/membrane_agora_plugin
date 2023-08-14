@@ -1,4 +1,4 @@
-defmodule Membrane.Element.Template.BundlexProject do
+defmodule Membrane.Agora.BundlexProject do
   use Bundlex.Project
 
   def project do
@@ -9,11 +9,15 @@ defmodule Membrane.Element.Template.BundlexProject do
 
   defp natives(_platform) do
     [
-      native: [
-        sources: ["native.c"],
+      sink: [
+        sources: ["sink.cpp"],
+        includes: ["agora_sdk/include/"],
+        libs: ["agora_rtc_sdk", "agora-ffmpeg"],
+        lib_dirs: ["agora_sdk/"],
         deps: [unifex: :unifex],
-        interface: [:nif, :cnode],
-        preprocessor: Unifex
+        interface: [:nif],
+        preprocessor: Unifex,
+        language: :cpp
       ]
     ]
   end
