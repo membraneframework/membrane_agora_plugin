@@ -7,7 +7,8 @@ state_type "SinkState"
 spec create(
        app_id :: string,
        token :: string,
-       channel_id :: string
+       channel_id :: string,
+       user_id :: string
      ) :: {:ok :: label, state}
 
 spec write_data(payload, is_keyframe :: bool, state) ::

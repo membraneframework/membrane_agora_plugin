@@ -1,8 +1,7 @@
 #include "sink.h"
-UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId)
+UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, char *userId)
 {
     SinkState *state = unifex_alloc_state(env);
-    const char *userId = "0";
 
     auto empty_state = SinkState();
     memcpy(state, &empty_state, sizeof(SinkState));
