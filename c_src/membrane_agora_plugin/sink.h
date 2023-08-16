@@ -2,11 +2,11 @@
 
 #include <csignal>
 #include <cstring>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <thread>
 #include <unistd.h>
-#include <iostream>
 
 #include "IAgoraService.h"
 #include "NGIAgoraRtcConnection.h"
@@ -16,16 +16,18 @@
 
 #include "NGIAgoraAudioTrack.h"
 #include "NGIAgoraLocalUser.h"
-#include "NGIAgoraMediaNodeFactory.h"
 #include "NGIAgoraMediaNode.h"
+#include "NGIAgoraMediaNodeFactory.h"
 #include "NGIAgoraVideoTrack.h"
 
-typedef struct _SinkState
-{
-  agora::agora_refptr<agora::rtc::IVideoEncodedImageSender> videoEncodedFrameSender;
+typedef struct _SinkState {
+  agora::agora_refptr<agora::rtc::IVideoEncodedImageSender>
+      videoEncodedFrameSender;
+  agora::agora_refptr<agora::rtc::IAudioEncodedFrameSender> audioFrameSender;
   agora::base::IAgoraService *service = NULL;
   agora::agora_refptr<agora::rtc::IRtcConnection> connection;
   agora::agora_refptr<agora::rtc::ILocalVideoTrack> customVideoTrack;
+  agora::agora_refptr<agora::rtc::ILocalAudioTrack> customAudioTrack;
   int framesPerSecond;
   int width;
   int height;

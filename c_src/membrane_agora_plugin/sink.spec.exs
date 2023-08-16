@@ -12,7 +12,7 @@ spec(
 )
 
 spec(
-  write_data(payload, is_keyframe :: bool, pts :: int, dts :: int, state) ::
+  write_video_data(payload, is_keyframe :: bool, pts :: int, dts :: int, state) ::
     (:ok :: label) | {:error :: label, reason :: atom}
 )
 

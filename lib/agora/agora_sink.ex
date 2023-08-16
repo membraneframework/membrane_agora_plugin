@@ -3,7 +3,11 @@ defmodule Membrane.Agora.Sink do
 
   alias Membrane.Agora.Sink.Native
 
-  def_input_pad(:video_input, accepted_format: %Membrane.H264{alignment: :au}, flow_control: :auto)
+  def_input_pad :video, accepted_format: %Membrane.H264{alignment: :au}, flow_control: :auto
+
+  def_input_pad :audio,
+    accepted_format: Membrane.AAC,
+    flow_control: :auto
 
   def_options(
     app_id: [spec: String.t()],
@@ -34,7 +38,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_stream_format(:video_input, stream_format, _ctx, state) do
+  def handle_stream_format(:video, stream_format, _ctx, state) do
     framerate =
       case stream_format.framerate do
         {frames, seconds} -> :erlang.round(frames / seconds)
@@ -54,12 +58,17 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_buffer(:video_input, buffer, _ctx, state) do
+  def handle_stream_format(:audio, stream_format, _ctx, state) do
+    {[], state}
+  end
+
+  @impl true
+  def handle_buffer(:video, buffer, _ctx, state) do
     pts = Membrane.Time.round_to_milliseconds(buffer.pts)
     dts = Membrane.Time.round_to_milliseconds(buffer.dts)
 
     :ok =
-      Native.write_data(
+      Native.write_video_data(
         buffer.payload,
         buffer.metadata.h264.key_frame?,
         pts,
@@ -67,6 +76,11 @@ defmodule Membrane.Agora.Sink do
         state.native_state
       )
 
+    {[], state}
+  end
+
+  @impl true
+  def handle_buffer(:audio, buffer, _ctx, state) do
     {[], state}
   end
 end
