@@ -1,13 +1,25 @@
 #include "sink.h"
-UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId)
+UNIFEX_TERM create(UnifexEnv *env, char *_appId, char *_token, char *_channelId)
 {
-    std::string userId = "someuser";
-    auto service = createAgoraService();
+    SinkState *state = unifex_alloc_state(env);
+    std::string appId = "18d3bcdafc734c9280b8b6e504b25fc8";
+    std::string channelId = "test_channel";
+    std::string token = "007eJxTYDh9ao1A3PSPMxJ3fjJWMefc1Woqkmzw4bRRqzHv16wo+SkKDIYWKcZJySmJacnmxibJlkYWBkkWSWappgYmSUamackWVg9upjQEMjK0/TnCwsgAgSA+D0NJanFJfHJGYl5eag4DAwBbUiNa";
+    std::string userId = "0";
+
+    auto empty_state = SinkState();
+    memcpy(state, &empty_state, sizeof(SinkState));
+    // state->connection.ptr_ = NULL;
+    // state->videoEncodedFrameSender.ptr_ = NULL;
+    state->service = createAgoraService();
+
+    auto &service = state->service;
+
     // Initializes the IAgoraService object
     agora::base::AgoraServiceConfiguration scfg;
     // Sets Agora App ID
-    scfg.appId = appId;
-    // Enables the audio processing module
+    scfg.appId = appId.c_str();
+    //   Enables the audio processing module
     scfg.enableAudioProcessor = false;
     // Disables the audio device module (Normally we do not directly connect audio capture or playback devices to a server)
     scfg.enableAudioDevice = false;
@@ -25,14 +37,16 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId)
     ccfg.autoSubscribeAudio = false;
     ccfg.autoSubscribeVideo = false;
     ccfg.clientRoleType = agora::rtc::CLIENT_ROLE_BROADCASTER;
-    agora::agora_refptr<agora::rtc::IRtcConnection> connection = service->createRtcConnection(ccfg);
+    state->connection = service->createRtcConnection(ccfg);
 
+    auto &connection = state->connection;
     // Calls registerObserver to listen to connection events
-    // auto connObserver = std::make_shared<SampleConnectionObserver>();
-    // connection->registerObserver(connObserver.get());
+    auto connObserver = std::make_shared<SampleConnectionObserver>();
+    connection->registerObserver(connObserver.get());
 
     // Calls connect to connect to an Agora <Vg k="VSDK" /> channel
-    if (connection->connect(appId, channelId, userId.c_str()))
+    int connection_res = connection->connect(token.c_str(), channelId.c_str(), userId.c_str());
+    if (connection_res)
     {
         AG_LOG(ERROR, "Failed to connect to Agora channel!");
         return -1;
@@ -45,10 +59,10 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId)
         AG_LOG(ERROR, "Failed to create media node factory!");
     }
     // Creates a sender for encoded video
-    agora::agora_refptr<agora::rtc::IVideoEncodedImageSender> videoEncodedFrameSender =
-        factory->createVideoEncodedImageSender();
 
-    if (!videoEncodedFrameSender)
+    // agora::agora_refptr<agora::rtc::IVideoEncodedImageSender> videoEncodedFrameSender =
+    state->videoEncodedFrameSender = factory->createVideoEncodedImageSender();
+    if (!state->videoEncodedFrameSender)
     {
         AG_LOG(ERROR, "Failed to create encoded video frame sender!");
         return -1;
@@ -57,7 +71,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId)
     agora::rtc::SenderOptions senderOptions;
     // Creates a custom video track that uses an encoded video stream sender
     agora::agora_refptr<agora::rtc::ILocalVideoTrack> customVideoTrack =
-        service->createCustomVideoTrack(videoEncodedFrameSender, senderOptions);
+        service->createCustomVideoTrack(state->videoEncodedFrameSender, senderOptions);
 
     if (!customVideoTrack)
     {
@@ -69,23 +83,22 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId)
     customVideoTrack->setEnabled(true);
     connection->getLocalUser()->publishVideo(customVideoTrack);
 
-    SinkState *state = unifex_alloc_state(env);
-    state->videoEncodedFrameSender = videoEncodedFrameSender;
+    // Wait until connected before sending media stream
+    connObserver->waitUntilConnected(1000);
 
     UNIFEX_TERM res;
-    res =
-        create_result_ok(env, state);
+    res = create_result_ok(env, state);
 
-    if (state)
-    {
-        unifex_release_state(env, state);
-    }
+    unifex_release_state(env, state);
+
     return res;
 }
 
-UNIFEX_TERM write_data(UnifexEnv *env, UnifexPayload *payload, bool isKeyframe,
+UNIFEX_TERM write_data(UnifexEnv *env, UnifexPayload *payload, int isKeyframe,
                        SinkState *state)
 {
+    std::cout << "XD" << std::endl;
+    // bool isKeyframe = true;
     int frameRate = 30;
     agora::rtc::EncodedVideoFrameInfo videoEncodedFrameInfo;
     videoEncodedFrameInfo.rotation = agora::rtc::VIDEO_ORIENTATION_0;
@@ -95,9 +108,25 @@ UNIFEX_TERM write_data(UnifexEnv *env, UnifexPayload *payload, bool isKeyframe,
         (isKeyframe ? agora::rtc::VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_KEY_FRAME
                     : agora::rtc::VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_DELTA_FRAME);
 
+    std::cout << "BEFORE " << payload->size << std::endl;
     state->videoEncodedFrameSender->sendEncodedVideoImage(
         reinterpret_cast<uint8_t *>(payload->data), payload->size,
         videoEncodedFrameInfo);
+    std::cout << "AFTER" << std::endl;
 
     return write_data_result_ok(env);
+}
+
+void handle_destroy_state(UnifexEnv *env, SinkState *state)
+{
+    std::cout << "handle destroy" << std::endl;
+    if (state->connection->disconnect())
+    {
+        AG_LOG(ERROR, "Failed to disconnect from Agora channel!");
+        return;
+    }
+    AG_LOG(INFO, "Disconnected from Agora channel successfully");
+    state->connection = nullptr;
+    state->service->release();
+    state->service = nullptr;
 }

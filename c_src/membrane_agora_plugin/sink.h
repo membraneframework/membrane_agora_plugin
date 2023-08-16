@@ -6,11 +6,13 @@
 #include <string>
 #include <thread>
 #include <unistd.h>
+#include <iostream>
 
 #include "IAgoraService.h"
 #include "NGIAgoraRtcConnection.h"
+
 #include "log.h"
-// #include "common/sample_common.h"
+#include "sample_connection_observer.h"
 
 #include "NGIAgoraAudioTrack.h"
 #include "NGIAgoraLocalUser.h"
@@ -21,6 +23,9 @@
 typedef struct _SinkState
 {
   agora::agora_refptr<agora::rtc::IVideoEncodedImageSender> videoEncodedFrameSender;
+  agora::base::IAgoraService *service = NULL;
+  agora::agora_refptr<agora::rtc::IRtcConnection> connection;
+
 } SinkState;
 
 #include "_generated/sink.h"
