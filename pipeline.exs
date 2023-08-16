@@ -13,15 +13,15 @@ defmodule Pipeline do
   @impl true
   def handle_init(_ctx, _options) do
     spec = [
-      child(:source, %Membrane.File.Source{location: @video_path})
-      |> child(:parser, %Membrane.H264.FFmpeg.Parser{
+      child(:video_source, %Membrane.File.Source{location: @video_path})
+      |> child(:video_parser, %Membrane.H264.FFmpeg.Parser{
         framerate: {@framerate, 1},
         skip_until_keyframe?: true,
         skip_until_parameters?: true,
         attach_nalus?: true,
         max_frame_reorder: 0
       })
-      |> child(:realtimer, Membrane.Realtimer)
+      |> child(:video_realtimer, Membrane.Realtimer)
       # |> child(%Membrane.Debug.Filter{
       #   handle_buffer: fn buffer ->
       #     buffer.metadata.h264.nalus

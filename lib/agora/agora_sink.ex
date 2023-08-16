@@ -46,7 +46,7 @@ defmodule Membrane.Agora.Sink do
       end
 
     {:ok, native_state} =
-      Native.update_stream_format(
+      Native.update_video_stream_format(
         stream_format.height,
         stream_format.width,
         framerate,
@@ -59,7 +59,14 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_stream_format(:audio, stream_format, _ctx, state) do
-    {[], state}
+    {:ok, native_state} =
+      Native.update_audio_stream_format(
+        stream_format.sample_rate,
+        stream_format.channels,
+        state.native_state
+      )
+
+    {[], %{state | native_state: native_state}}
   end
 
   @impl true
@@ -81,6 +88,8 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_buffer(:audio, buffer, _ctx, state) do
+    IO.inspect(buffer)
+    :ok = Native.write_audio_data(buffer.payload, state.native_state)
     {[], state}
   end
 end

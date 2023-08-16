@@ -32,6 +32,8 @@ typedef struct _SinkState {
   int width;
   int height;
 
+  int sampleRate;
+  int numberOfChannels;
 } SinkState;
 
 #include "_generated/sink.h"

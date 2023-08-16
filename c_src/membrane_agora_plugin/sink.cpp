@@ -13,7 +13,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   // Sets Agora App ID
   scfg.appId = appId;
   // Enables the audio processing module
-  scfg.enableAudioProcessor = false;
+  scfg.enableAudioProcessor = true;
   // Disables the audio device module (Normally we do not directly connect audio
   // capture or playback devices to a server)
   scfg.enableAudioDevice = false;
@@ -109,12 +109,12 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   return res;
 }
 
-UNIFEX_TERM update_stream_format(UnifexEnv *env, int height, int width,
-                                 int framesPerSecond, SinkState *state) {
+UNIFEX_TERM update_video_stream_format(UnifexEnv *env, int height, int width,
+                                       int framesPerSecond, SinkState *state) {
   state->height = height;
   state->width = width;
   state->framesPerSecond = framesPerSecond;
-  return update_stream_format_result_ok(env, state);
+  return update_video_stream_format_result_ok(env, state);
 }
 
 UNIFEX_TERM write_video_data(UnifexEnv *env, UnifexPayload *payload,
@@ -145,6 +145,25 @@ UNIFEX_TERM write_video_data(UnifexEnv *env, UnifexPayload *payload,
   }
 
   return write_video_data_result_ok(env);
+}
+
+UNIFEX_TERM update_audio_stream_format(UnifexEnv *env, int sampleRate,
+                                       int numberOfChannels, SinkState *state) {
+  state->sampleRate = sampleRate;
+  state->numberOfChannels = numberOfChannels;
+  return update_audio_stream_format_result_ok(env, state);
+}
+
+UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
+                             SinkState *state) {
+  std::cout << "AUDIO" << std::endl;
+  agora::rtc::EncodedAudioFrameInfo audioFrameInfo;
+  audioFrameInfo.sampleRateHz = state->sampleRate;
+  audioFrameInfo.numberOfChannels = state->numberOfChannels;
+  state->audioFrameSender->sendEncodedAudioFrame(
+      reinterpret_cast<uint8_t *>(payload->data), payload->size,
+      audioFrameInfo);
+  return write_audio_data_result_ok(env);
 }
 
 void handle_destroy_state(UnifexEnv *env, SinkState *state) {
