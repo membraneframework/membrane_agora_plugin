@@ -4,7 +4,7 @@ void sig_handler(int signo)
     printf("received SIG %d\n", signo);
 }
 
-UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, char *userId, int framerate)
+UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, char *userId)
 {
 
     for (int i = 0; i < NSIG; i++)
@@ -17,7 +17,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
     memcpy(state, &empty_state, sizeof(SinkState));
 
     state->service = createAgoraService();
-    state->framerate = framerate;
 
     auto &service = state->service;
 
@@ -87,8 +86,8 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
     connection->getLocalUser()->publishVideo(state->customVideoTrack);
 
     // Wait until connected before sending media stream
-    connObserver->waitUntilConnected(10000);
-    printf("CONNECTED");
+    connObserver->waitUntilConnected(3000);
+    // printf("CONNECTED");
     connection->unregisterObserver(connObserver.get());
     connObserver.reset();
     UNIFEX_TERM res = create_result_ok(env, state);
@@ -98,30 +97,42 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
     return res;
 }
 
-UNIFEX_TERM write_data(UnifexEnv *env, UnifexPayload *payload, int isKeyframe,
+UNIFEX_TERM update_stream_format(UnifexEnv *env, int height, int width, int framesPerSecond, SinkState *state)
+{
+    state->height = height;
+    state->width = width;
+    state->framesPerSecond = framesPerSecond;
+    return update_stream_format_result_ok(env, state);
+}
+
+UNIFEX_TERM write_data(UnifexEnv *env, UnifexPayload *payload, int isKeyframe, int pts, int dts,
                        SinkState *state)
 {
-    AG_LOG(INFO, "write_data START %d", isKeyframe);
+    AG_LOG(INFO, "write_data START %d %d", isKeyframe, payload->size);
 
     agora::rtc::EncodedVideoFrameInfo videoEncodedFrameInfo;
-    videoEncodedFrameInfo.rotation = agora::rtc::VIDEO_ORIENTATION_0;
-    videoEncodedFrameInfo.width = 100;
-    videoEncodedFrameInfo.height = 100;
-    videoEncodedFrameInfo.codecType = agora::rtc::VIDEO_CODEC_H264;
-    videoEncodedFrameInfo.framesPerSecond = state->framerate;
 
+    videoEncodedFrameInfo.width = state->width;
+    videoEncodedFrameInfo.height = state->height;
+    videoEncodedFrameInfo.framesPerSecond = state->framesPerSecond;
+
+    videoEncodedFrameInfo.rotation = agora::rtc::VIDEO_ORIENTATION_0;
+    videoEncodedFrameInfo.codecType = agora::rtc::VIDEO_CODEC_H264;
+
+    videoEncodedFrameInfo.decodeTimeMs = dts;
+    videoEncodedFrameInfo.captureTimeMs = pts;
     videoEncodedFrameInfo.frameType =
         (isKeyframe ? agora::rtc::VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_KEY_FRAME
                     : agora::rtc::VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_DELTA_FRAME);
 
-    // void *data = malloc(payload->size * sizeof(unsigned char));
-    // memcpy(data, payload->data, payload->size * sizeof(unsigned char));
-    bool send_result = state->videoEncodedFrameSender->sendEncodedVideoImage(
-        reinterpret_cast<uint8_t *>(payload->data), payload->size,
-        videoEncodedFrameInfo);
-    auto res = write_data_result_ok(env);
-    // AG_LOG(INFO, "write_data END2 %d", send_result);
-    return res;
+    if (state->videoEncodedFrameSender->sendEncodedVideoImage(
+            reinterpret_cast<uint8_t *>(payload->data), payload->size,
+            videoEncodedFrameInfo) != true)
+    {
+        AG_LOG(ERROR, "Couldn't send frame");
+    }
+
+    return write_data_result_ok(env);
 }
 
 void handle_destroy_state(UnifexEnv *env, SinkState *state)

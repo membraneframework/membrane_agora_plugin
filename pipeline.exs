@@ -19,18 +19,18 @@ defmodule Pipeline do
         attach_nalus?: true
       })
       |> child(:realtimer, Membrane.Realtimer)
-      |> child(%Membrane.Debug.Filter{
-        handle_buffer: fn buffer ->
-          buffer.metadata.h264.nalus
-          |> Enum.each(&IO.inspect(&1.metadata.h264.type, label: :NALU))
-        end
-      })
+      # |> child(%Membrane.Debug.Filter{
+      #   handle_buffer: fn buffer ->
+      #     buffer.metadata.h264.nalus
+      #     |> Enum.each(&IO.inspect(&1.metadata.h264.type, label: :NALU))
+      #   end
+      # })
+      |> via_in(:video_input)
       |> child(:sink, %Membrane.Agora.Sink{
         channel_name: @channel_name,
         token: @token,
         app_id: @app_id,
-        user_id: @user_id,
-        framerate: @framerate
+        user_id: @user_id
       })
 
     {[spec: spec], nil}
