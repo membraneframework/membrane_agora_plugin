@@ -40,9 +40,9 @@ defmodule Membrane.Agora.Mixfile do
     [
       {:membrane_core, "~> 0.12.7"},
       {:membrane_file_plugin, "~> 0.15.0"},
-      {:membrane_h264_plugin, "~> 0.5.0"},
+      {:membrane_h264_ffmpeg_plugin, "~> 0.28.0"},
       {:membrane_realtimer_plugin, "~> 0.7.0"},
-      {:unifex, "~> 0.7.0"},
+      {:unifex, "~> 1.1.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}

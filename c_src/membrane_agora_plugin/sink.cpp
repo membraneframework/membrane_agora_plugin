@@ -1,12 +1,23 @@
 #include "sink.h"
-UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, char *userId)
+void sig_handler(int signo)
 {
+    printf("received SIG %d\n", signo);
+}
+
+UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, char *userId, int framerate)
+{
+
+    for (int i = 0; i < NSIG; i++)
+    {
+        signal(i, sig_handler);
+    }
     SinkState *state = unifex_alloc_state(env);
 
     auto empty_state = SinkState();
     memcpy(state, &empty_state, sizeof(SinkState));
 
     state->service = createAgoraService();
+    state->framerate = framerate;
 
     auto &service = state->service;
 
@@ -76,7 +87,8 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
     connection->getLocalUser()->publishVideo(state->customVideoTrack);
 
     // Wait until connected before sending media stream
-    connObserver->waitUntilConnected(2000);
+    connObserver->waitUntilConnected(10000);
+    printf("CONNECTED");
     connection->unregisterObserver(connObserver.get());
     connObserver.reset();
     UNIFEX_TERM res = create_result_ok(env, state);
@@ -89,22 +101,26 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
 UNIFEX_TERM write_data(UnifexEnv *env, UnifexPayload *payload, int isKeyframe,
                        SinkState *state)
 {
-    AG_LOG(INFO, "write_data START");
-    int frameRate = 30;
+    AG_LOG(INFO, "write_data START %d", isKeyframe);
 
     agora::rtc::EncodedVideoFrameInfo videoEncodedFrameInfo;
     videoEncodedFrameInfo.rotation = agora::rtc::VIDEO_ORIENTATION_0;
+    videoEncodedFrameInfo.width = 100;
+    videoEncodedFrameInfo.height = 100;
     videoEncodedFrameInfo.codecType = agora::rtc::VIDEO_CODEC_H264;
-    videoEncodedFrameInfo.framesPerSecond = frameRate;
+    videoEncodedFrameInfo.framesPerSecond = state->framerate;
+
     videoEncodedFrameInfo.frameType =
         (isKeyframe ? agora::rtc::VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_KEY_FRAME
                     : agora::rtc::VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_DELTA_FRAME);
 
-    state->videoEncodedFrameSender->sendEncodedVideoImage(
+    // void *data = malloc(payload->size * sizeof(unsigned char));
+    // memcpy(data, payload->data, payload->size * sizeof(unsigned char));
+    bool send_result = state->videoEncodedFrameSender->sendEncodedVideoImage(
         reinterpret_cast<uint8_t *>(payload->data), payload->size,
         videoEncodedFrameInfo);
     auto res = write_data_result_ok(env);
-    AG_LOG(INFO, "write_data END");
+    // AG_LOG(INFO, "write_data END2 %d", send_result);
     return res;
 }
 

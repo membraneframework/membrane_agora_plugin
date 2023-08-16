@@ -26,6 +26,7 @@ typedef struct _SinkState
   agora::base::IAgoraService *service = NULL;
   agora::agora_refptr<agora::rtc::IRtcConnection> connection;
   agora::agora_refptr<agora::rtc::ILocalVideoTrack> customVideoTrack;
+  int framerate;
 
 } SinkState;
 

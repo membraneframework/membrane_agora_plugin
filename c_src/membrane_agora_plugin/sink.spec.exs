@@ -8,7 +8,8 @@ spec create(
        app_id :: string,
        token :: string,
        channel_id :: string,
-       user_id :: string
+       user_id :: string,
+       framerate :: int
      ) :: {:ok :: label, state}
 
 spec write_data(payload, is_keyframe :: bool, state) ::
