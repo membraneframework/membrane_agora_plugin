@@ -23,6 +23,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
     if (state->service->initialize(scfg) != agora::ERR_OK)
     {
         AG_LOG(ERROR, "Failed to initialize service");
+        unifex_release_state(env, state);
         return create_result_error(env, "Failed to initialize service");
     }
 
@@ -42,6 +43,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
     if (connection_res)
     {
         AG_LOG(ERROR, "Failed to connect to Agora channel!");
+        unifex_release_state(env, state);
         return create_result_error(env, "Failed to connect to Agora channel!");
     }
 
@@ -50,15 +52,16 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
     if (!factory)
     {
         AG_LOG(ERROR, "Failed to create media node factory!");
+        unifex_release_state(env, state);
         return create_result_error(env, "Failed to create media node factory!");
     }
-    // Creates a sender for encoded video
 
-    // agora::agora_refptr<agora::rtc::IVideoEncodedImageSender> videoEncodedFrameSender =
+    // Creates a sender for encoded video
     state->videoEncodedFrameSender = factory->createVideoEncodedImageSender();
     if (!state->videoEncodedFrameSender)
     {
         AG_LOG(ERROR, "Failed to create encoded video frame sender!");
+        unifex_release_state(env, state);
         return create_result_error(env, "Failed to create encoded video frame sender!");
     }
 
@@ -70,6 +73,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId, ch
     if (!state->customVideoTrack)
     {
         AG_LOG(ERROR, "Failed to create video track!");
+        unifex_release_state(env, state);
         return create_result_error(env, "Failed to create video track!");
     }
 
@@ -129,14 +133,27 @@ UNIFEX_TERM write_data(UnifexEnv *env, UnifexPayload *payload, int isKeyframe, i
 
 void handle_destroy_state(UnifexEnv *env, SinkState *state)
 {
-    state->connection->getLocalUser()->unpublishVideo(state->customVideoTrack);
-    if (state->connection->disconnect())
+    if (state->connection)
     {
-        AG_LOG(ERROR, "Failed to disconnect from Agora channel!");
-        return;
+        if (state->customVideoTrack)
+        {
+            state->connection->getLocalUser()->unpublishVideo(state->customVideoTrack);
+            state->customVideoTrack = NULL;
+        }
+
+        if (state->connection->disconnect())
+        {
+            AG_LOG(ERROR, "Failed to disconnect from Agora channel!");
+            return;
+        }
+        AG_LOG(INFO, "Disconnected from Agora channel successfully");
+        state->connection = NULL;
     }
-    AG_LOG(INFO, "Disconnected from Agora channel successfully");
-    state->connection = nullptr;
-    state->service->release();
-    state->service = nullptr;
+
+    if (state->service)
+    {
+        state->service->release();
+        AG_LOG(INFO, "Agora service released successfully");
+        state->service = NULL;
+    }
 }
