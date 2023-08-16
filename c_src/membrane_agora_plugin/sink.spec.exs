@@ -2,7 +2,7 @@ module Membrane.Agora.Sink.Native
 
 state_type "SinkState"
 
-interface [NIF]
+# interface [NIF]
 
 spec create(
        app_id :: string,
