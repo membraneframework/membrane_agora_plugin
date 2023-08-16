@@ -14,7 +14,21 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_init(_ctx, opts) do
-    {:ok, native_state} = Native.create(opts.app_id, opts.token, opts.channel_name, opts.user_id)
+    state = %{
+      app_id: opts.app_id,
+      token: opts.token,
+      channel_name: opts.channel_name,
+      user_id: opts.user_id,
+      native_state: nil
+    }
+
+    {[], state}
+  end
+
+  @impl true
+  def handle_setup(_ctx, state) do
+    {:ok, native_state} =
+      Native.create(state.app_id, state.token, state.channel_name, state.user_id)
 
     {[], %{native_state: native_state}}
   end
