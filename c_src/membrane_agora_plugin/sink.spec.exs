@@ -8,12 +8,12 @@ spec(
     token :: string,
     channel_id :: string,
     user_id :: string
-  ) :: {:ok :: label, state}
+  ) :: {:ok :: label, state} | {:error :: label, reason :: atom}
 )
 
 spec(
   write_data(payload, is_keyframe :: bool, pts :: int, dts :: int, state) ::
-    :ok :: label
+    (:ok :: label) | {:error :: label, reason :: atom}
 )
 
 spec(
