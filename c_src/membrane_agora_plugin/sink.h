@@ -10,8 +10,8 @@
 #include "IAgoraService.h"
 #include "NGIAgoraRtcConnection.h"
 
+#include "connection_observer.h"
 #include "log.h"
-#include "sample_connection_observer.h"
 
 #include "NGIAgoraAudioTrack.h"
 #include "NGIAgoraLocalUser.h"

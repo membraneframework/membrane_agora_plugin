@@ -10,6 +10,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
 
   // service creation and initialization
   state->service = createAgoraService();
+
   agora::base::AgoraServiceConfiguration scfg;
   scfg.appId = appId;
   scfg.enableAudioProcessor = true;
@@ -30,15 +31,16 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   state->connection = state->service->createRtcConnection(ccfg);
 
   // connecting
-  auto connObserver = std::make_shared<SampleConnectionObserver>();
+  auto connObserver = std::make_shared<ConnectionObserver>();
   state->connection->registerObserver(connObserver.get());
+
   int connection_res = state->connection->connect(token, channelId, userId);
   if (connection_res) {
     AG_LOG(ERROR, "Failed to connect to Agora channel!");
     unifex_release_state(env, state);
     return create_result_error(env, "Failed to connect to Agora channel!");
   }
-  connObserver->waitUntilConnected(3000);
+  connObserver->waitUntilConnected();
 
   // senders creation
   agora::agora_refptr<agora::rtc::IMediaNodeFactory> factory =
