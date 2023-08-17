@@ -1,7 +1,12 @@
-#include "NGIAgoraRtcConnection.h"
+#pragma once
+
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
+
+#include "NGIAgoraRtcConnection.h"
+
+#include "log.h"
 
 class ConnectionObserver : public agora::rtc::IRtcConnectionObserver {
 public:
@@ -12,8 +17,10 @@ public:
 public: // IRtcConnectionObserver
   void onConnected(const agora::rtc::TConnectionInfo &connectionInfo,
                    agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
-  void onConnecting(const agora::rtc::TConnectionInfo &connectionInfo,
-                    agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
+
+  void
+  onConnecting(const agora::rtc::TConnectionInfo &connectionInfo,
+               agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {}
 
   void
   onDisconnected(const agora::rtc::TConnectionInfo &connectionInfo,

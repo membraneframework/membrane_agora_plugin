@@ -46,7 +46,7 @@ defmodule Pipeline do
   end
 
   @impl true
-  def handle_element_end_of_stream(:agora_sink, pad, context, state) do
+  def handle_element_end_of_stream(:agora_sink, pad, _context, state) do
     state = %{state | terminated_tracks: [pad | state.terminated_tracks]}
 
     if all_tracks_terminated?(state.terminated_tracks) do

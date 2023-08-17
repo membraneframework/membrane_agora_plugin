@@ -16,7 +16,6 @@
 #include "NGIAgoraVideoTrack.h"
 
 #include "connection_observer.h"
-
 #include "log.h"
 
 typedef struct _SinkState {
