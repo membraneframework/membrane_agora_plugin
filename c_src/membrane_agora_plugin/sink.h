@@ -32,7 +32,6 @@ typedef struct _SinkState {
   agora::agora_refptr<agora::rtc::ILocalAudioTrack> customAudioTrack;
 
   // video track parameters
-  int framesPerSecond;
   int width;
   int height;
 

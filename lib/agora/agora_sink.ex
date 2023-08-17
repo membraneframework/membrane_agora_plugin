@@ -39,17 +39,10 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_stream_format(:video, stream_format, _ctx, state) do
-    framerate =
-      case stream_format.framerate do
-        {frames, seconds} -> :erlang.round(frames / seconds)
-        _other -> 30
-      end
-
     {:ok, native_state} =
       Native.update_video_stream_format(
         stream_format.height,
         stream_format.width,
-        framerate,
         state.native_state
       )
 
@@ -73,15 +66,10 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_buffer(:video, buffer, _ctx, state) do
-    pts = Membrane.Time.round_to_milliseconds(buffer.pts)
-    dts = Membrane.Time.round_to_milliseconds(buffer.dts)
-
     :ok =
       Native.write_video_data(
         buffer.payload,
         buffer.metadata.h264.key_frame?,
-        pts,
-        dts,
         state.native_state
       )
 

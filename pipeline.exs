@@ -1,8 +1,8 @@
 defmodule Pipeline do
   use Membrane.Pipeline
 
-  @video_path "test4.h264"
-  @audio_path "example/out/test_data/send_audio.aac"
+  @video_path "test/fixtures/in_video.h264"
+  @audio_path "test/fixtures/in_audio.aac"
 
   @channel_name "test_channel"
   @token "007eJxTYPD9n6JQzKbiyzt/y8YD0pLZjDozxT9/u+tY3vdyh3jgzw4FBkOLFOOk5JTEtGRzY5NkSyMLgySLJLNUUwOTJCPTtGSLW6fupjQEMjJ4rPrGxMgAgSA+D0NJanFJfHJGYl5eag4DAwA0sSN6"
@@ -22,12 +22,6 @@ defmodule Pipeline do
         max_frame_reorder: 0
       })
       |> child(:video_realtimer, Membrane.Realtimer)
-      # |> child(%Membrane.Debug.Filter{
-      #   handle_buffer: fn buffer ->
-      #     buffer.metadata.h264.nalus
-      #     |> Enum.each(&IO.inspect(&1.metadata.h264.type, label: :NALU))
-      #   end
-      # })
       |> via_in(:video)
       |> child(:agora_sink, %Membrane.Agora.Sink{
         channel_name: @channel_name,

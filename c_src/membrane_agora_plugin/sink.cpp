@@ -112,21 +112,18 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
 }
 
 UNIFEX_TERM update_video_stream_format(UnifexEnv *env, int height, int width,
-                                       int framesPerSecond, SinkState *state) {
+                                       SinkState *state) {
   state->height = height;
   state->width = width;
-  state->framesPerSecond = framesPerSecond;
   return update_video_stream_format_result_ok(env, state);
 }
 
 UNIFEX_TERM write_video_data(UnifexEnv *env, UnifexPayload *payload,
-                             int isKeyframe, int pts, int dts,
-                             SinkState *state) {
+                             int isKeyframe, SinkState *state) {
   agora::rtc::EncodedVideoFrameInfo videoEncodedFrameInfo;
 
   videoEncodedFrameInfo.width = state->width;
   videoEncodedFrameInfo.height = state->height;
-  videoEncodedFrameInfo.framesPerSecond = state->framesPerSecond;
 
   videoEncodedFrameInfo.rotation = agora::rtc::VIDEO_ORIENTATION_0;
   videoEncodedFrameInfo.codecType = agora::rtc::VIDEO_CODEC_H264;
@@ -138,8 +135,8 @@ UNIFEX_TERM write_video_data(UnifexEnv *env, UnifexPayload *payload,
   if (state->videoEncodedFrameSender->sendEncodedVideoImage(
           reinterpret_cast<uint8_t *>(payload->data), payload->size,
           videoEncodedFrameInfo) != true) {
-    AG_LOG(ERROR, "Couldn't send frame");
-    return write_video_data_result_error(env, "Couldn't send frame");
+    AG_LOG(ERROR, "Couldn't send video frame");
+    return write_video_data_result_error(env, "Couldn't send video frame");
   }
 
   return write_video_data_result_ok(env);
@@ -157,9 +154,6 @@ UNIFEX_TERM update_audio_stream_format(UnifexEnv *env, int sampleRate,
 
 UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
                              SinkState *state) {
-  std::cout << "AUDIO " << state->sampleRate << " " << state->numberOfChannels
-            << " " << payload->size << " " << state->samplesPerChannelPerFrame
-            << std::endl;
   agora::rtc::EncodedAudioFrameInfo audioFrameInfo;
   audioFrameInfo.sampleRateHz = state->sampleRate;
   audioFrameInfo.numberOfChannels = state->numberOfChannels;
@@ -168,7 +162,8 @@ UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
   if (state->audioEncodedFrameSender->sendEncodedAudioFrame(
           reinterpret_cast<uint8_t *>(payload->data), payload->size,
           audioFrameInfo) != true) {
-    std::cout << "NIE DZIALA" << std::endl;
+    AG_LOG(ERROR, "Couldn't send audio frame");
+    return write_video_data_result_error(env, "Couldn't send audio frame");
   }
 
   return write_audio_data_result_ok(env);

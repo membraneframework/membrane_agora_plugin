@@ -12,12 +12,12 @@ spec(
 )
 
 spec(
-  write_video_data(payload, is_keyframe :: bool, pts :: int, dts :: int, state) ::
+  write_video_data(payload, is_keyframe :: bool, state) ::
     (:ok :: label) | {:error :: label, reason :: atom}
 )
 
 spec(
-  update_video_stream_format(height :: int, width :: int, framesPerSecond :: int, state) ::
+  update_video_stream_format(height :: int, width :: int, state) ::
     {:ok :: label, state}
 )
 
