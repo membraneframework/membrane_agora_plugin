@@ -2,52 +2,45 @@
 
 UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
                    char *userId) {
+
+  // sink's native state initialization
   SinkState *state = unifex_alloc_state(env);
   auto empty_state = SinkState();
   memcpy(state, &empty_state, sizeof(SinkState));
 
+  // service creation and initialization
   state->service = createAgoraService();
-
-  // Initializes the IAgoraService object
   agora::base::AgoraServiceConfiguration scfg;
-  // Sets Agora App ID
   scfg.appId = appId;
-  // Enables the audio processing module
   scfg.enableAudioProcessor = true;
-  // Disables the audio device module (Normally we do not directly connect audio
-  // capture or playback devices to a server)
   scfg.enableAudioDevice = false;
-  // Whether to enable video
   scfg.enableVideo = true;
-  // Disables user IDs in string format (the character can be digits, letters,
-  // or special symbols) so that user ID can only contain digits
   scfg.useStringUid = false;
-  // scfg.channelProfile = CHANNEL_PROFILE_LIVE_BROADCASTING;
   if (state->service->initialize(scfg) != agora::ERR_OK) {
     AG_LOG(ERROR, "Failed to initialize service");
     unifex_release_state(env, state);
     return create_result_error(env, "Failed to initialize service");
   }
 
-  // Creates an IRtcConnection object
+  // connection configuration
   agora::rtc::RtcConnectionConfiguration ccfg;
   ccfg.autoSubscribeAudio = false;
   ccfg.autoSubscribeVideo = false;
   ccfg.clientRoleType = agora::rtc::CLIENT_ROLE_BROADCASTER;
   state->connection = state->service->createRtcConnection(ccfg);
 
-  // Calls registerObserver to listen to connection events
+  // connecting
   auto connObserver = std::make_shared<SampleConnectionObserver>();
   state->connection->registerObserver(connObserver.get());
-
-  // Calls connect to connect to an Agora <Vg k="VSDK" /> channel
   int connection_res = state->connection->connect(token, channelId, userId);
   if (connection_res) {
     AG_LOG(ERROR, "Failed to connect to Agora channel!");
     unifex_release_state(env, state);
     return create_result_error(env, "Failed to connect to Agora channel!");
   }
+  connObserver->waitUntilConnected(3000);
 
+  // senders creation
   agora::agora_refptr<agora::rtc::IMediaNodeFactory> factory =
       state->service->createMediaNodeFactory();
   if (!factory) {
@@ -55,8 +48,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
     unifex_release_state(env, state);
     return create_result_error(env, "Failed to create media node factory!");
   }
-
-  // Creates a sender for encoded video
   state->videoEncodedFrameSender = factory->createVideoEncodedImageSender();
   if (!state->videoEncodedFrameSender) {
     AG_LOG(ERROR, "Failed to create encoded video frame sender!");
@@ -64,8 +55,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
     return create_result_error(env,
                                "Failed to create encoded video frame sender!");
   }
-
-  // Creates a sender for encoded audio
   state->audioEncodedFrameSender = factory->createAudioEncodedFrameSender();
   if (!state->audioEncodedFrameSender) {
     AG_LOG(ERROR, "Failed to create audio encoded frame sender!");
@@ -74,17 +63,17 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
                                "Failed to create audio encoded frame sender!");
   }
 
-  // Creates a custom video track that uses an encoded video stream sender
+  // video track creation
   agora::rtc::SenderOptions senderOptions;
   state->customVideoTrack = state->service->createCustomVideoTrack(
       state->videoEncodedFrameSender, senderOptions);
-
   if (!state->customVideoTrack) {
     AG_LOG(ERROR, "Failed to create video track!");
     unifex_release_state(env, state);
     return create_result_error(env, "Failed to create video track!");
   }
 
+  // audio track creation
   state->customAudioTrack = state->service->createCustomAudioTrack(
       state->audioEncodedFrameSender, agora::base::MIX_ENABLED);
   if (!state->customAudioTrack) {
@@ -93,19 +82,16 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
     return create_result_error(env, "Failed to create audio track!");
   }
 
-  // Enables and publishes video track
+  // publishing of the tracks
   state->customVideoTrack->setEnabled(true);
-  state->connection->getLocalUser()->publishVideo(state->customVideoTrack);
-  // Enables and publishes audio track
   state->customAudioTrack->setEnabled(true);
+  state->connection->getLocalUser()->publishVideo(state->customVideoTrack);
   state->connection->getLocalUser()->publishAudio(state->customAudioTrack);
 
-  // Wait until connected before sending media stream
-  connObserver->waitUntilConnected(3000);
+  // cleaning up
   state->connection->unregisterObserver(connObserver.get());
   connObserver.reset();
   UNIFEX_TERM res = create_result_ok(env, state);
-
   unifex_release_state(env, state);
 
   return res;

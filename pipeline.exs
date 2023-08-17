@@ -8,7 +8,7 @@ defmodule Pipeline do
   @token "007eJxTYPD9n6JQzKbiyzt/y8YD0pLZjDozxT9/u+tY3vdyh3jgzw4FBkOLFOOk5JTEtGRzY5NkSyMLgySLJLNUUwOTJCPTtGSLW6fupjQEMjJ4rPrGxMgAgSA+D0NJanFJfHJGYl5eag4DAwA0sSN6"
   @app_id "18d3bcdafc734c9280b8b6e504b25fc8"
   @user_id "0"
-  @framerate 30
+  @framerate 300
 
   @impl true
   def handle_init(_ctx, _options) do
@@ -70,9 +70,6 @@ end
 ref = Process.monitor(pid)
 
 receive do
-  {:DOWN, :normal, ^ref, :process, _pid} ->
+  {:DOWN, ^ref, :process, _pid, _reason} ->
     nil
-
-  other ->
-    IO.inspect(other)
 end

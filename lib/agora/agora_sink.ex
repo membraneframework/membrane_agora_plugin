@@ -60,7 +60,6 @@ defmodule Membrane.Agora.Sink do
         state.native_state
       )
 
-    IO.inspect(stream_format, label: :stream_format)
     {[], %{state | native_state: native_state}}
   end
 

@@ -2,7 +2,6 @@
 
 #include <csignal>
 #include <cstring>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <thread>
