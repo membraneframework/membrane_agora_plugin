@@ -1,21 +1,58 @@
+# Membrane Agora Plugin
 
-## Compile Agora SDK Samples（For Linux）
+This repository contains Membrane Agora Plugin, which wraps:
+[Agora Server Gateway](https://docs.agora.io/en/server-gateway/overview/product-overview?platform=linux-cpp).
+Currently only `Membrane.Agora.Sink` is available.
 
+## Installation
+Clone this repository:
 ```
-$ ./build.sh
-$ ./sync-data.sh
-
-Upon successful compilation, there are a couple of **sample_xxx"" excutables in out folder
-Also, download the media files by running sync-data.sh script. These audio/video files will be used together with the sample code.
+git clone https://github.com/membraneframework-labs/membrane_agora_sink
+```
+and download the Agora Server Gateway SDK:
+```
+# Get SDK
+wget https://download.agora.io/sdk/release/Agora-RTC-x86_64-linux-gnu-v3.8.202.20-20220627_152601-214165.tgz
+tar xvf Agora-RTC-x86_64-linux-gnu-v3.8.202.20-20220627_152601-214165.tgz
+```
+Then copy the `agora_sdk` directory from the `agora_rtc_sdk` (it's the directory you have just extracted the files you had downloaded)
+to the membrane_agora_plugin directory:
+```
+cp -r agora_rtc_sdk/agora_sdk membrane_agora_sink/
 ```
 
-
-## Run Agora SDK Samples
-
-**sample_send_aac** reads from an AAC file and sends the AAC stream to Agora channel
-
-#### Example:
+Later update the `LD_LIBRARY_PATH`:
 ```
-To send aac stream to Agora channel named "demo_channel". Note that `xxxxxx` should be replaced with your own App ID or token
-$ out/sample_send_aac --token XXXXXX --channelId demo_channel --audioFile test_data/send_audio.aac
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path to the agora_sdk directory>
 ```
+
+Finally, you can use the cloned repository as a dependency in `mix.exs` of your project:
+```
+deps() do
+    ... 
+    {:membrane_agora_plugin, path: <path to the cloned repository>},
+    ...
+end
+```
+and use the `Membrane.Agora.Sink` element.
+
+## Usage
+You can run the `example.exs` script with an exemplary pipeline to see `Membrane.Agora.Sink` in action.
+First, you need to fill the following Agora's specific parameters:
+```elixir
+  @channel_name "<the name of the channel for which you have generated the temporary RTC token>"
+  @token "<your Agora's temporary RTC token>"
+  @app_id "<your Agora's application ID>"
+  @user_id "<any string consisting only of ciphers (0-9)>"
+```
+[Here](https://docs.agora.io/en/server-gateway/reference/manage-agora-account?platform=linux-cpp) you can read how to obtain these values.
+
+Then run the exemplary [web demo application](https://webdemo.agora.io/basicVideoCall/index.html), as specified here: https://docs.agora.io/en/server-gateway/get-started/integrate-sdk?platform=linux-cpp#use-the-client-to-receive-streams-sent-from-the-server.
+Remember that you need to use the same Agora parameters as you have specified in the `example.exs`.
+
+Finaly, type:
+```
+mix run pipeline.exs
+```
+and observe the web demo application.
+Once the pipeline is started, audio and video should start playing.

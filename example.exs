@@ -3,12 +3,12 @@ defmodule Pipeline do
 
   @video_path "test/fixtures/in_video.h264"
   @audio_path "test/fixtures/in_audio.aac"
-
-  @channel_name "test_channel"
-  @token "007eJxTYPD9n6JQzKbiyzt/y8YD0pLZjDozxT9/u+tY3vdyh3jgzw4FBkOLFOOk5JTEtGRzY5NkSyMLgySLJLNUUwOTJCPTtGSLW6fupjQEMjJ4rPrGxMgAgSA+D0NJanFJfHJGYl5eag4DAwA0sSN6"
-  @app_id "18d3bcdafc734c9280b8b6e504b25fc8"
-  @user_id "0"
   @framerate 300
+
+  @channel_name "<the name of the channel for which you have generated the temporary RTC token>"
+  @token "<your Agora's temporary RTC token>"
+  @app_id "<your Agora's application ID>"
+  @user_id "<any string consisting only of ciphers (0-9)>"
 
   @impl true
   def handle_init(_ctx, _options) do
@@ -64,12 +64,15 @@ defmodule Pipeline do
   def handle_element_end_of_stream(_child, _pad, _context, state) do
     {[], state}
   end
+
+  def wait_for_termination(ref) do
+    receive do
+      {:DOWN, ^ref, :process, _pid, _reason} ->
+        nil
+    end
+  end
 end
 
 {:ok, _supervisor, pid} = Pipeline.start()
 ref = Process.monitor(pid)
-
-receive do
-  {:DOWN, ^ref, :process, _pid, _reason} ->
-    nil
-end
+Pipeline.wait_for_termination(ref)
