@@ -3,7 +3,7 @@ defmodule Pipeline do
 
   @video_path "test/fixtures/in_video.h264"
   @audio_path "test/fixtures/in_audio.aac"
-  @framerate 300
+  @framerate 30
 
   @channel_name "<the name of the channel for which you have generated the temporary RTC token>"
   @token "<your Agora's temporary RTC token>"
@@ -14,12 +14,9 @@ defmodule Pipeline do
   def handle_init(_ctx, _options) do
     spec = [
       child(:video_source, %Membrane.File.Source{location: @video_path})
-      |> child(:video_parser, %Membrane.H264.FFmpeg.Parser{
-        framerate: {@framerate, 1},
-        skip_until_keyframe?: true,
-        skip_until_parameters?: true,
-        attach_nalus?: true,
-        max_frame_reorder: 0
+      |> child(:video_parser, %Membrane.H264.Parser{
+        generate_best_effort_timestamps: %{framerate: {@framerate, 1}},
+        repeat_parameter_sets: true
       })
       |> child(:video_realtimer, Membrane.Realtimer)
       |> via_in(Pad.ref(:video, 0))

@@ -40,8 +40,7 @@ defmodule Membrane.Agora.Mixfile do
     [
       {:membrane_core, "~> 0.12.7"},
       {:membrane_file_plugin, "~> 0.15.0"},
-      {:membrane_h264_ffmpeg_plugin, "~> 0.28.0"},
-      {:membrane_h264_plugin, "~> 0.5.1"},
+      {:membrane_h264_plugin, "~> 0.6.0"},
       {:membrane_realtimer_plugin, "~> 0.7.0"},
       {:membrane_aac_plugin, "~> 0.15.0"},
       {:unifex, "~> 1.1.0"},
