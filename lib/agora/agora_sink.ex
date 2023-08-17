@@ -2,10 +2,17 @@ defmodule Membrane.Agora.Sink do
   use Membrane.Sink
 
   alias Membrane.Agora.Sink.Native
+  alias Membrane.Pad
 
-  def_input_pad :video, accepted_format: %Membrane.H264{alignment: :au}, flow_control: :auto
+  require Pad
+
+  def_input_pad :video,
+    availability: :on_request,
+    accepted_format: %Membrane.H264{alignment: :au},
+    flow_control: :auto
 
   def_input_pad :audio,
+    availability: :on_request,
     accepted_format: Membrane.AAC,
     flow_control: :auto
 
@@ -59,7 +66,16 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_stream_format(:video, stream_format, _ctx, state) do
+  def handle_pad_added(Pad.ref(_type, stream_id), _ctx, _state) when stream_id != 0,
+    do: raise(ArgumentError, message: "Stream id must always be 0")
+
+  @impl true
+  def handle_pad_added(_pad, _ctx, state) do
+    {[], state}
+  end
+
+  @impl true
+  def handle_stream_format(Pad.ref(:video, 0), stream_format, _ctx, state) do
     {:ok, native_state} =
       Native.update_video_stream_format(
         stream_format.height,
@@ -72,7 +88,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_stream_format(:audio, stream_format, _ctx, state) do
+  def handle_stream_format(Pad.ref(:audio, 0), stream_format, _ctx, state) do
     {:ok, native_state} =
       Native.update_audio_stream_format(
         stream_format.sample_rate,
@@ -85,7 +101,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_buffer(:video, buffer, _ctx, state) do
+  def handle_buffer(Pad.ref(:video, 0), buffer, _ctx, state) do
     :ok =
       Native.write_video_data(
         buffer.payload,
@@ -97,7 +113,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_buffer(:audio, buffer, _ctx, state) do
+  def handle_buffer(Pad.ref(:audio, 0), buffer, _ctx, state) do
     :ok = Native.write_audio_data(buffer.payload, state.native_state)
     {[], state}
   end

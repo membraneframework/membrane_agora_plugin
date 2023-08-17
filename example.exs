@@ -22,7 +22,7 @@ defmodule Pipeline do
         max_frame_reorder: 0
       })
       |> child(:video_realtimer, Membrane.Realtimer)
-      |> via_in(:video)
+      |> via_in(Pad.ref(:video, 0))
       |> child(:agora_sink, %Membrane.Agora.Sink{
         channel_name: @channel_name,
         token: @token,
@@ -38,7 +38,7 @@ defmodule Pipeline do
         samples_per_frame: 1024
       })
       |> child(:audio_realtimer, Membrane.Realtimer)
-      |> via_in(:audio)
+      |> via_in(Pad.ref(:audio, 0))
       |> get_child(:agora_sink)
     ]
 
@@ -57,7 +57,7 @@ defmodule Pipeline do
   end
 
   defp all_tracks_terminated?(terminated_tracks) do
-    :audio in terminated_tracks and :video in terminated_tracks
+    Pad.ref(:audio, 0) in terminated_tracks and Pad.ref(:video, 0) in terminated_tracks
   end
 
   @impl true
