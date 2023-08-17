@@ -8,19 +8,19 @@
 #include <unistd.h>
 
 #include "IAgoraService.h"
-#include "NGIAgoraRtcConnection.h"
-
-#include "connection_observer.h"
-#include "log.h"
-
 #include "NGIAgoraAudioTrack.h"
 #include "NGIAgoraLocalUser.h"
 #include "NGIAgoraMediaNode.h"
 #include "NGIAgoraMediaNodeFactory.h"
+#include "NGIAgoraRtcConnection.h"
 #include "NGIAgoraVideoTrack.h"
 
+#include "connection_observer.h"
+
+#include "log.h"
+
 typedef struct _SinkState {
-  // Agora SDK handlers
+  // Agora SDK
   agora::base::IAgoraService *service = NULL;
   agora::agora_refptr<agora::rtc::IRtcConnection> connection;
   agora::agora_refptr<agora::rtc::IVideoEncodedImageSender>
@@ -31,13 +31,13 @@ typedef struct _SinkState {
   agora::agora_refptr<agora::rtc::ILocalAudioTrack> customAudioTrack;
 
   // video track parameters
-  int width;
-  int height;
+  unsigned int width;
+  unsigned int height;
 
   // audio track parameters
-  int sampleRate;
-  int numberOfChannels;
-  int samplesPerChannelPerFrame;
+  unsigned int sampleRate;
+  unsigned int numberOfChannels;
+  unsigned int samplesPerChannelPerFrame;
 } SinkState;
 
 #include "_generated/sink.h"

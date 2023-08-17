@@ -35,3 +35,5 @@ spec(
   ) ::
     {:ok :: label, state}
 )
+
+dirty :cpu, create: 4
