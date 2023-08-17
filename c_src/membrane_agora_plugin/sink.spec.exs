@@ -27,6 +27,11 @@ spec(
 )
 
 spec(
-  update_audio_stream_format(sample_rate :: int, number_of_channels :: int, state) ::
+  update_audio_stream_format(
+    sample_rate :: int,
+    number_of_channels :: int,
+    samples_per_channel_per_frame :: int,
+    state
+  ) ::
     {:ok :: label, state}
 )

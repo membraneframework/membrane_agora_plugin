@@ -22,6 +22,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   // Disables user IDs in string format (the character can be digits, letters,
   // or special symbols) so that user ID can only contain digits
   scfg.useStringUid = false;
+  // scfg.channelProfile = CHANNEL_PROFILE_LIVE_BROADCASTING;
   if (state->service->initialize(scfg) != agora::ERR_OK) {
     AG_LOG(ERROR, "Failed to initialize service");
     unifex_release_state(env, state);
@@ -47,7 +48,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
     return create_result_error(env, "Failed to connect to Agora channel!");
   }
 
-  // Creates an IMediaNodeFactory object.
   agora::agora_refptr<agora::rtc::IMediaNodeFactory> factory =
       state->service->createMediaNodeFactory();
   if (!factory) {
@@ -65,16 +65,17 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
                                "Failed to create encoded video frame sender!");
   }
 
-  state->audioFrameSender = factory->createAudioEncodedFrameSender();
-  if (!state->audioFrameSender) {
+  // Creates a sender for encoded audio
+  state->audioEncodedFrameSender = factory->createAudioEncodedFrameSender();
+  if (!state->audioEncodedFrameSender) {
     AG_LOG(ERROR, "Failed to create audio encoded frame sender!");
     unifex_release_state(env, state);
     return create_result_error(env,
                                "Failed to create audio encoded frame sender!");
   }
 
-  agora::rtc::SenderOptions senderOptions;
   // Creates a custom video track that uses an encoded video stream sender
+  agora::rtc::SenderOptions senderOptions;
   state->customVideoTrack = state->service->createCustomVideoTrack(
       state->videoEncodedFrameSender, senderOptions);
 
@@ -85,7 +86,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   }
 
   state->customAudioTrack = state->service->createCustomAudioTrack(
-      state->audioFrameSender, agora::base::MIX_DISABLED);
+      state->audioEncodedFrameSender, agora::base::MIX_ENABLED);
   if (!state->customAudioTrack) {
     AG_LOG(ERROR, "Failed to create audio track!");
     unifex_release_state(env, state);
@@ -95,6 +96,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   // Enables and publishes video track
   state->customVideoTrack->setEnabled(true);
   state->connection->getLocalUser()->publishVideo(state->customVideoTrack);
+  // Enables and publishes audio track
   state->customAudioTrack->setEnabled(true);
   state->connection->getLocalUser()->publishAudio(state->customAudioTrack);
 
@@ -120,8 +122,6 @@ UNIFEX_TERM update_video_stream_format(UnifexEnv *env, int height, int width,
 UNIFEX_TERM write_video_data(UnifexEnv *env, UnifexPayload *payload,
                              int isKeyframe, int pts, int dts,
                              SinkState *state) {
-  AG_LOG(INFO, "write_video_data START %d %d", isKeyframe, payload->size);
-
   agora::rtc::EncodedVideoFrameInfo videoEncodedFrameInfo;
 
   videoEncodedFrameInfo.width = state->width;
@@ -131,8 +131,6 @@ UNIFEX_TERM write_video_data(UnifexEnv *env, UnifexPayload *payload,
   videoEncodedFrameInfo.rotation = agora::rtc::VIDEO_ORIENTATION_0;
   videoEncodedFrameInfo.codecType = agora::rtc::VIDEO_CODEC_H264;
 
-  videoEncodedFrameInfo.decodeTimeMs = dts;
-  videoEncodedFrameInfo.captureTimeMs = pts;
   videoEncodedFrameInfo.frameType =
       (isKeyframe ? agora::rtc::VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_KEY_FRAME
                   : agora::rtc::VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_DELTA_FRAME);
@@ -148,21 +146,31 @@ UNIFEX_TERM write_video_data(UnifexEnv *env, UnifexPayload *payload,
 }
 
 UNIFEX_TERM update_audio_stream_format(UnifexEnv *env, int sampleRate,
-                                       int numberOfChannels, SinkState *state) {
+                                       int numberOfChannels,
+                                       int samplesPerChannelPerFrame,
+                                       SinkState *state) {
   state->sampleRate = sampleRate;
   state->numberOfChannels = numberOfChannels;
+  state->samplesPerChannelPerFrame = samplesPerChannelPerFrame;
   return update_audio_stream_format_result_ok(env, state);
 }
 
 UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
                              SinkState *state) {
-  std::cout << "AUDIO" << std::endl;
+  std::cout << "AUDIO " << state->sampleRate << " " << state->numberOfChannels
+            << " " << payload->size << " " << state->samplesPerChannelPerFrame
+            << std::endl;
   agora::rtc::EncodedAudioFrameInfo audioFrameInfo;
   audioFrameInfo.sampleRateHz = state->sampleRate;
   audioFrameInfo.numberOfChannels = state->numberOfChannels;
-  state->audioFrameSender->sendEncodedAudioFrame(
-      reinterpret_cast<uint8_t *>(payload->data), payload->size,
-      audioFrameInfo);
+  audioFrameInfo.samplesPerChannel = state->samplesPerChannelPerFrame;
+  audioFrameInfo.codec = agora::rtc::AUDIO_CODEC_TYPE::AUDIO_CODEC_AACLC;
+  if (state->audioEncodedFrameSender->sendEncodedAudioFrame(
+          reinterpret_cast<uint8_t *>(payload->data), payload->size,
+          audioFrameInfo) != true) {
+    std::cout << "NIE DZIALA" << std::endl;
+  }
+
   return write_audio_data_result_ok(env);
 }
 

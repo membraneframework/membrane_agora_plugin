@@ -34,7 +34,7 @@ defmodule Membrane.Agora.Sink do
     {:ok, native_state} =
       Native.create(state.app_id, state.token, state.channel_name, state.user_id)
 
-    {[], %{native_state: native_state}}
+    {[], %{state | native_state: native_state}}
   end
 
   @impl true
@@ -53,7 +53,7 @@ defmodule Membrane.Agora.Sink do
         state.native_state
       )
 
-    state = %{native_state: native_state}
+    state = %{state | native_state: native_state}
     {[], state}
   end
 
@@ -63,9 +63,11 @@ defmodule Membrane.Agora.Sink do
       Native.update_audio_stream_format(
         stream_format.sample_rate,
         stream_format.channels,
+        stream_format.samples_per_frame,
         state.native_state
       )
 
+    IO.inspect(stream_format, label: :stream_format)
     {[], %{state | native_state: native_state}}
   end
 
@@ -88,7 +90,6 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_buffer(:audio, buffer, _ctx, state) do
-    IO.inspect(buffer)
     :ok = Native.write_audio_data(buffer.payload, state.native_state)
     {[], state}
   end

@@ -1,11 +1,11 @@
 defmodule Pipeline do
   use Membrane.Pipeline
 
-  @video_path "in_video.h264"
-  @audio_path "in_audio.aac"
+  @video_path "test4.h264"
+  @audio_path "example/out/test_data/send_audio.aac"
 
   @channel_name "test_channel"
-  @token "007eJxTYJBR/jtv9Urd/AplvfYdAdeKLmVWxa59Esp9fZ34v+ZtqgsVGAwtUoyTklMS05LNjU2SLY0sDJIsksxSTQ1MkoxM05ItOIrupDQEMjKsnLCSkZEBAkF8HoaS1OKS+OSMxLy81BwGBgCTXCOx"
+  @token "007eJxTYPD9n6JQzKbiyzt/y8YD0pLZjDozxT9/u+tY3vdyh3jgzw4FBkOLFOOk5JTEtGRzY5NkSyMLgySLJLNUUwOTJCPTtGSLW6fupjQEMjJ4rPrGxMgAgSA+D0NJanFJfHJGYl5eag4DAwA0sSN6"
   @app_id "18d3bcdafc734c9280b8b6e504b25fc8"
   @user_id "0"
   @framerate 30
@@ -40,19 +40,30 @@ defmodule Pipeline do
       })
       |> child(:audio_parser, %Membrane.AAC.Parser{
         in_encapsulation: :ADTS,
-        out_encapsulation: :none
+        out_encapsulation: :none,
+        samples_per_frame: 1024
       })
       |> child(:audio_realtimer, Membrane.Realtimer)
       |> via_in(:audio)
       |> get_child(:agora_sink)
     ]
 
-    {[spec: spec], nil}
+    {[spec: spec], %{terminated_tracks: []}}
   end
 
   @impl true
-  def handle_element_end_of_stream(:agora_sink, _pad, _context, state) do
-    {[terminate: :normal], state}
+  def handle_element_end_of_stream(:agora_sink, pad, context, state) do
+    state = %{state | terminated_tracks: [pad | state.terminated_tracks]}
+
+    if all_tracks_terminated?(state.terminated_tracks) do
+      {[terminate: :normal], state}
+    else
+      {[], state}
+    end
+  end
+
+  defp all_tracks_terminated?(terminated_tracks) do
+    :audio in terminated_tracks and :video in terminated_tracks
   end
 
   @impl true
@@ -62,9 +73,12 @@ defmodule Pipeline do
 end
 
 {:ok, _supervisor, pid} = Pipeline.start()
-_ref = Process.monitor(pid)
+ref = Process.monitor(pid)
 
 receive do
-  msg ->
-    IO.inspect(msg)
+  {:DOWN, :normal, ^ref, :process, _pid} ->
+    nil
+
+  other ->
+    IO.inspect(other)
 end
