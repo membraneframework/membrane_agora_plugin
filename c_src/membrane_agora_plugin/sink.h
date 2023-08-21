@@ -15,10 +15,10 @@
 #include "NGIAgoraRtcConnection.h"
 #include "NGIAgoraVideoTrack.h"
 
+#include "common.h"
 #include "connection_observer.h"
-#include "log.h"
 
-typedef struct _SinkState {
+typedef struct {
   // Agora SDK
   agora::base::IAgoraService *service = NULL;
   agora::agora_refptr<agora::rtc::IRtcConnection> connection;

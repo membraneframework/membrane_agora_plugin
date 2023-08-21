@@ -6,7 +6,7 @@
 
 #include "NGIAgoraRtcConnection.h"
 
-#include "log.h"
+#include "common.h"
 
 class ConnectionObserver : public agora::rtc::IRtcConnectionObserver {
 public:
@@ -20,46 +20,74 @@ public: // IRtcConnectionObserver
 
   void
   onConnecting(const agora::rtc::TConnectionInfo &connectionInfo,
-               agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {}
+               agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
+    UNUSED(connectionInfo);
+    UNUSED(reason);
+  }
 
   void
   onDisconnected(const agora::rtc::TConnectionInfo &connectionInfo,
-                 agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {}
+                 agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
+    UNUSED(connectionInfo);
+    UNUSED(reason);
+  }
 
   void
   onReconnecting(const agora::rtc::TConnectionInfo &connectionInfo,
-                 agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {}
+                 agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
+    UNUSED(connectionInfo);
+    UNUSED(reason);
+  }
 
   void
   onReconnected(const agora::rtc::TConnectionInfo &connectionInfo,
-                agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {}
+                agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
+    UNUSED(connectionInfo);
+    UNUSED(reason);
+  }
 
   void
   onConnectionLost(const agora::rtc::TConnectionInfo &connectionInfo) override {
+    UNUSED(connectionInfo);
   }
 
-  void onLastmileQuality(const agora::rtc::QUALITY_TYPE quality) override {}
+  void onLastmileQuality(const agora::rtc::QUALITY_TYPE quality) override {
+    UNUSED(quality);
+  }
 
-  void onTokenPrivilegeWillExpire(const char *token) override {}
+  void onTokenPrivilegeWillExpire(const char *token) override { UNUSED(token); }
 
   void onTokenPrivilegeDidExpire() override {}
 
   void onConnectionFailure(
       const agora::rtc::TConnectionInfo &connectionInfo,
-      agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {}
+      agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
+    UNUSED(connectionInfo);
+    UNUSED(reason);
+  }
 
-  void onUserJoined(agora::user_id_t userId) override {}
+  void onUserJoined(agora::user_id_t userId) override { UNUSED(userId); }
 
   void onUserLeft(agora::user_id_t userId,
 
-                  agora::rtc::USER_OFFLINE_REASON_TYPE reason) override {}
+                  agora::rtc::USER_OFFLINE_REASON_TYPE reason) override {
+    UNUSED(userId);
+    UNUSED(reason);
+  }
 
-  void onTransportStats(const agora::rtc::RtcStats &stats) override {}
+  void onTransportStats(const agora::rtc::RtcStats &stats) override {
+    UNUSED(stats);
+  }
 
   void onLastmileProbeResult(
-      const agora::rtc::LastmileProbeResult &result) override {}
+      const agora::rtc::LastmileProbeResult &result) override {
+    UNUSED(result);
+  }
 
-  void onChannelMediaRelayStateChanged(int state, int code) override {}
+  void onChannelMediaRelayStateChanged(int state, int code) override {
+    UNUSED(state);
+    UNUSED(code);
+  }
 
 private:
   std::atomic<bool> _is_connected;

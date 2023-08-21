@@ -5,10 +5,10 @@ defmodule Pipeline do
   @audio_path "test/fixtures/in_audio.aac"
   @framerate 30
 
-  @channel_name "<the name of the channel for which you have generated the temporary RTC token>"
-  @token "<your Agora's temporary RTC token>"
-  @app_id "<your Agora's application ID>"
-  @user_id "<any string consisting only of ciphers (0-9)>"
+  @channel_name System.get_env("AGORA_CHANNEL_NAME", "")
+  @token System.get_env("AGORA_TOKEN", "")
+  @app_id System.get_env("AGORA_APP_ID", "")
+  @user_id System.get_env("AGORA_USER_ID", "0")
 
   @impl true
   def handle_init(_ctx, _options) do
@@ -53,13 +53,13 @@ defmodule Pipeline do
     end
   end
 
-  defp all_tracks_terminated?(terminated_tracks) do
-    Pad.ref(:audio, 0) in terminated_tracks and Pad.ref(:video, 0) in terminated_tracks
-  end
-
   @impl true
   def handle_element_end_of_stream(_child, _pad, _context, state) do
     {[], state}
+  end
+
+  defp all_tracks_terminated?(terminated_tracks) do
+    Pad.ref(:audio, 0) in terminated_tracks and Pad.ref(:video, 0) in terminated_tracks
   end
 
   def wait_for_termination(ref) do

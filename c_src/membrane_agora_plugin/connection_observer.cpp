@@ -12,6 +12,8 @@ void ConnectionObserver::waitUntilConnected() {
 void ConnectionObserver::onConnected(
     const agora::rtc::TConnectionInfo &connectionInfo,
     agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) {
+  UNUSED(connectionInfo);
+  UNUSED(reason);
   std::unique_lock<std::mutex> unique_lock(_lock);
   _is_connected = true;
   _cv.notify_one();

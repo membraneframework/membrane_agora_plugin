@@ -6,7 +6,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   // sink's native state initialization
   SinkState *state = unifex_alloc_state(env);
   auto empty_state = SinkState();
-  memcpy(state, &empty_state, sizeof(SinkState));
+  memcpy((void *)state, (void *)&empty_state, sizeof(SinkState));
 
   // service creation and initialization
   state->service = createAgoraService();
@@ -158,6 +158,7 @@ UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
 }
 
 void handle_destroy_state(UnifexEnv *env, SinkState *state) {
+  UNUSED(env);
   if (state->connection) {
     if (state->customVideoTrack) {
       state->connection->getLocalUser()->unpublishVideo(
