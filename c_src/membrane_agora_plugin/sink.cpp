@@ -1,5 +1,11 @@
 #include "sink.h"
 
+// Once SIGINT is delivered twice to the process that runs the elixir script
+// (e.g. with ctrl+c), the script terminates. Sometimes it results in a
+// SEGFAULT being thrown from then Agora's "AgMajor" thread, over which
+// we don't have control. Remember to properly terminate the process with
+// SIGTERM.
+
 UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
                    char *userId) {
 
