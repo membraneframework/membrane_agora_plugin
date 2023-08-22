@@ -34,6 +34,10 @@ Before running any of the projects that use membrane_agora_plugin, make sure to 
 ```
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path to membrane_agora_plugin repository>/agora_sdk
 ```
+You need to download all the elixir dependencies with:
+```
+mix deps.get
+```
 
 As an example, you can run the `example.exs` script to see `Membrane.Agora.Sink` in action.
 First, you need to configure the following Agora's specific environmental variables:
