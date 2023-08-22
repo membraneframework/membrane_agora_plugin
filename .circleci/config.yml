@@ -2,13 +2,6 @@ version: 2.1
 orbs:
   elixir: membraneframework/elixir@1
 
-jobs:
-  get_agora:
-    steps: 
-      - run: chmod a+x install.sh
-      - run: ./install
-      - run: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./agora_sdk
-
 workflows:
   version: 2
   build:
@@ -17,25 +10,16 @@ workflows:
           filters: &filters
             tags:
               only: /v.*/
-          requires:
-            - get_agora
-      - elixir/test:
-          filters:
-            <<: *filters
-          requires:
-            - get_agora
+          pre-steps:
+            - checkout
+            - run: chmod a+x install.sh
+            - run: ./install.sh
+            - run: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./agora_sdk
       - elixir/lint:
           filters:
             <<: *filters
-      # - elixir/hex_publish:
-      #     requires:
-      #       - elixir/build_test
-      #       - elixir/test
-      #       - elixir/lint
-      #     context:
-      #       - Deployment
-      #     filters:
-      #       branches:
-      #         ignore: /.*/
-      #       tags:
-      #         only: /v.*/
+          pre-steps:
+            - checkout
+            - run: chmod a+x install.sh
+            - run: ./install.sh
+            - run: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./agora_sdk

@@ -1,8 +1,13 @@
 defmodule Membrane.Agora.Sink do
+  @moduledoc """
+  Membrane element wrapping Agora's Server Gateway SDK.
+
+  """
   use Membrane.Sink
 
-  alias Membrane.Agora.Sink.Native
   require Membrane.Pad, as: Pad
+
+  alias Membrane.Agora.Sink.Native
 
   def_input_pad(:video,
     availability: :on_request,
