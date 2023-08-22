@@ -19,34 +19,33 @@ defmodule Membrane.Agora.Sink do
     accepted_format: Membrane.AAC,
     flow_control: :auto
 
-  def_options
-    app_id: [
-      spec: String.t(),
-      description: """
-      ID of an Agora application.
-      """
-    ],
-    channel_name: [
-      spec: String.t(),
-      descritpion: """
-      A name of a channel to which the sink should connect.
-      """
-    ],
-    token: [
-      spec: String.t(),
-      descritpion: """
-      A temporary token used for authorization of an access to Agora's channel.
-      """
-    ],
-    user_id: [
-      spec: String.t(),
-      default: "0",
-      description: """
-        User ID, must contain only numbers (0-9).
+  def_options app_id: [
+                spec: String.t(),
+                description: """
+                ID of an Agora application.
+                """
+              ],
+              channel_name: [
+                spec: String.t(),
+                descritpion: """
+                A name of a channel to which the sink should connect.
+                """
+              ],
+              token: [
+                spec: String.t(),
+                descritpion: """
+                A temporary token used for authorization of an access to Agora's channel.
+                """
+              ],
+              user_id: [
+                spec: String.t(),
+                default: "0",
+                description: """
+                  User ID, must contain only numbers (0-9).
 
-        If set to "0" (default), the user ID of the Agora's channel will be chosen automatically.
-      """
-    ]
+                  If set to "0" (default), the user ID of the Agora's channel will be chosen automatically.
+                """
+              ]
 
   @impl true
   def handle_init(_ctx, opts) do
