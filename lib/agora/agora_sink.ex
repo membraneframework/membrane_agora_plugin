@@ -9,19 +9,17 @@ defmodule Membrane.Agora.Sink do
 
   alias Membrane.Agora.Sink.Native
 
-  def_input_pad(:video,
+  def_input_pad :video,
     availability: :on_request,
     accepted_format: %Membrane.H264{alignment: :au},
     flow_control: :auto
-  )
 
-  def_input_pad(:audio,
+  def_input_pad :audio,
     availability: :on_request,
     accepted_format: Membrane.AAC,
     flow_control: :auto
-  )
 
-  def_options(
+  def_options
     app_id: [
       spec: String.t(),
       description: """
@@ -49,7 +47,6 @@ defmodule Membrane.Agora.Sink do
         If set to "0" (default), the user ID of the Agora's channel will be chosen automatically.
       """
     ]
-  )
 
   @impl true
   def handle_init(_ctx, opts) do

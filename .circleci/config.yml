@@ -12,7 +12,6 @@ workflows:
               only: /v.*/
           pre-steps:
             - checkout
-            - run: chmod a+x install.sh
             - run: ./install.sh
             - run: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./agora_sdk
       - elixir/lint:
@@ -20,6 +19,5 @@ workflows:
             <<: *filters
           pre-steps:
             - checkout
-            - run: chmod a+x install.sh
             - run: ./install.sh
             - run: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./agora_sdk

@@ -1,9 +1,20 @@
+locals_without_parens =
+  [
+    def_output_pad: 2,
+    def_input_pad: 2,
+    def_options: 1,
+    def_clock: 1,
+    def_type_from_list: 1,
+    assert_receive_message: 3
+  ]
+
 [
   inputs: [
-    "{lib,test,config}/**/*.{ex,exs}",
-    "c_src/**/*.spec.exs",
-    ".formatter.exs",
-    "*.exs"
+    "{lib,test,config,benchmark}/**/*.{ex,exs}",
+    "mix.exs"
   ],
-  import_deps: [:membrane_core, :unifex]
+  locals_without_parens: locals_without_parens,
+  export: [
+    locals_without_parens: locals_without_parens
+  ]
 ]
