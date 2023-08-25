@@ -5,8 +5,11 @@ This repository contains Membrane Agora Plugin, which wraps:
 Currently only `Membrane.Agora.Sink` is available.
 
 ## Installation
-The Agora's Gateway server SDK is available only for linux plafrom, and so is membrane_agora_plugin.
-You can use the `membraneframeworklabs/docker_membrane` docker image as a running environment:
+The Agora's Gateway server SDK is available only for Ubuntu (14.04 or higher) and
+CentOS (6.6 or higher) operating systems, and so is membrane_agora_plugin. 
+The required CPU architecture is arm64 or x86-64.
+
+You can use the `membraneframeworklabs/docker_membrane` docker image (in version `v2.2.0-rc2` or higher) as a running environment:
 ```
 docker run -it membraneframeworklabs/docker_membrane
 ```
