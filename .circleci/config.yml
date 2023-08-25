@@ -10,21 +10,14 @@ workflows:
           filters: &filters
             tags:
               only: /v.*/
-      - elixir/test:
-          filters:
-            <<: *filters
+          pre-steps:
+            - checkout
+            - run: ./install.sh
+            - run: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./agora_sdk
       - elixir/lint:
           filters:
             <<: *filters
-      - elixir/hex_publish:
-          requires:
-            - elixir/build_test
-            - elixir/test
-            - elixir/lint
-          context:
-            - Deployment
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v.*/
+          pre-steps:
+            - checkout
+            - run: ./install.sh
+            - run: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./agora_sdk

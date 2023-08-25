@@ -1,27 +1,67 @@
-# Membrane Template Plugin
+# Membrane Agora Plugin
 
-[![Hex.pm](https://img.shields.io/hexpm/v/membrane_template_plugin.svg)](https://hex.pm/packages/membrane_template_plugin)
-[![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_template_plugin)
-[![CircleCI](https://circleci.com/gh/membraneframework/membrane_template_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_template_plugin)
-
-This repository contains a template for new plugins.
-
-Check out different branches for other flavours of template.
-
-It is part of [Membrane Multimedia Framework](https://membraneframework.org).
+This repository contains Membrane Agora Plugin, which wraps:
+[Agora Server Gateway](https://docs.agora.io/en/server-gateway/overview/product-overview?platform=linux-cpp).
+Currently only `Membrane.Agora.Sink` is available.
 
 ## Installation
+The Agora's Gateway server SDK is available only for Ubuntu (14.04 or higher) and
+CentOS (6.6 or higher) operating systems, and so is membrane_agora_plugin. 
+The required CPU architecture is arm64 or x86-64.
 
-The package can be installed by adding `membrane_template_plugin` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:membrane_template_plugin, "~> 0.1.0"}
-  ]
-end
+You can use the `membraneframeworklabs/docker_membrane` docker image (in version `v2.2.0-rc2` or higher) as a running environment:
+```
+docker run -it membraneframeworklabs/docker_membrane
 ```
 
-## Usage
+Once you are on the desired OS, clone the repository:
+```
+git clone https://github.com/membraneframework-labs/membrane_agora_plugin
+cd membrane_agora_plugin
+```
 
-TODO
+Then install the required Agora Server Gateway's SDK with:
+```
+chmod a+x install.sh
+./install.sh
+``` 
+
+Finally, you can use the cloned repository as a dependency in `mix.exs` of your project:
+```
+deps() do
+    ... 
+    {:membrane_agora_plugin, path: <path to the cloned repository>},
+    ...
+end
+```
+and use the `Membrane.Agora.Sink` element.
+
+## Usage
+Before running any of the projects that use membrane_agora_plugin, make sure to set the `LD_LIBRARY_PATH`:
+```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path to membrane_agora_plugin repository>/agora_sdk
+```
+You need to download all the elixir dependencies with:
+```
+mix deps.get
+```
+
+As an example, you can run the `example.exs` script to see `Membrane.Agora.Sink` in action.
+First, you need to configure the following Agora's specific environmental variables:
+```bash
+  export AGORA_CHANNEL_NAME=<the name of the channel for which you have generated the temporary RTC token>
+  export AGORA_TOKEN=<your Agora's temporary RTC token>
+  export AGORA_APP_ID=<your Agora's application ID>
+  export AGORA_USER_ID=<any string consisting only of ciphers (0-9)>
+```
+[Here](https://docs.agora.io/en/server-gateway/reference/manage-agora-account?platform=linux-cpp) you can read how to obtain these values.
+
+Then run the exemplary [web demo application](https://webdemo.agora.io/basicVideoCall/index.html) (you can read about it [here](https://docs.agora.io/en/server-gateway/get-started/integrate-sdk?platform=linux-cpp#use-the-client-to-receive-streams-sent-from-the-server)).
+Remember that you need to use the same Agora parameters as you have specified in the environmental variables.
+
+Finaly, type:
+```
+mix run example.exs
+```
+and observe the web demo application.
+Once the pipeline is started, audio and video should start playing.
