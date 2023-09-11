@@ -30,7 +30,6 @@ defmodule Pipeline do
         location: @audio_path
       })
       |> child(:audio_parser, %Membrane.AAC.Parser{
-        in_encapsulation: :ADTS,
         out_encapsulation: :none,
         samples_per_frame: 1024
       })
