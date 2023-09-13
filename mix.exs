@@ -39,6 +39,8 @@ defmodule Membrane.Agora.Mixfile do
   defp deps do
     [
       {:membrane_core, "~> 0.12.7"},
+      {:membrane_h264_format, "~> 0.6.1"},
+      {:membrane_aac_format, "~> 0.8.0"},
       {:unifex, "~> 1.1.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
