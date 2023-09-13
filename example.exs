@@ -16,7 +16,8 @@ defmodule Pipeline do
       child(:video_source, %Membrane.File.Source{location: @video_path})
       |> child(:video_parser, %Membrane.H264.Parser{
         generate_best_effort_timestamps: %{framerate: {@framerate, 1}},
-        repeat_parameter_sets: true
+        repeat_parameter_sets: true,
+        output_stream_structure: :annexb
       })
       |> child(:video_realtimer, Membrane.Realtimer)
       |> via_in(Pad.ref(:video, 0))
