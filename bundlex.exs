@@ -13,7 +13,7 @@ defmodule Membrane.Agora.BundlexProject do
   end
 
   def project do
-    case TargetGetter.get_target() do
+    case get_target() do
       %{os: "linux"} ->
         System.shell("./install.sh")
       other_target ->
