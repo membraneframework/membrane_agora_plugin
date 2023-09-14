@@ -63,7 +63,18 @@ defmodule Membrane.Agora.Sink do
   @impl true
   def handle_setup(_ctx, state) do
     {:ok, native_state} =
-      Native.create(state.app_id, state.token, state.channel_name, state.user_id)
+      try do
+        Native.create(state.app_id, state.token, state.channel_name, state.user_id)
+      rescue
+        _e in UndefinedFunctionError ->
+          raise """
+          Couldn't setup NIF. Perhaps you have forgotten to set LD_LIBRARY_PATH:
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#{Path.expand("#{__ENV__.file}/../../../agora_sdk")}
+          """
+
+        other_error ->
+          raise other_error
+      end
 
     {[], %{state | native_state: native_state}}
   end

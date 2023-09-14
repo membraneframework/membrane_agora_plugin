@@ -1,4 +1,5 @@
 Mix.install([
+  {:membrane_agora_plugin, "~> 0.1.0"},
   {:membrane_file_plugin, "~> 0.15.0"},
   {:membrane_h264_plugin, "~> 0.7.2"},
   {:membrane_realtimer_plugin, "~> 0.7.0"},
