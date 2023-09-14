@@ -1,3 +1,11 @@
+Mix.install([
+  {:membrane_agora_plugin, "~> 0.1.0"},
+  {:membrane_file_plugin, "~> 0.15.0"},
+  {:membrane_h264_plugin, "~> 0.7.2"},
+  {:membrane_realtimer_plugin, "~> 0.7.0"},
+  {:membrane_aac_plugin, "~> 0.16.0"}
+])
+
 defmodule Pipeline do
   use Membrane.Pipeline
 
@@ -16,7 +24,8 @@ defmodule Pipeline do
       child(:video_source, %Membrane.File.Source{location: @video_path})
       |> child(:video_parser, %Membrane.H264.Parser{
         generate_best_effort_timestamps: %{framerate: {@framerate, 1}},
-        repeat_parameter_sets: true
+        repeat_parameter_sets: true,
+        output_stream_structure: :annexb
       })
       |> child(:video_realtimer, Membrane.Realtimer)
       |> via_in(Pad.ref(:video, 0))
@@ -30,7 +39,6 @@ defmodule Pipeline do
         location: @audio_path
       })
       |> child(:audio_parser, %Membrane.AAC.Parser{
-        in_encapsulation: :ADTS,
         out_encapsulation: :none,
         samples_per_frame: 1024
       })

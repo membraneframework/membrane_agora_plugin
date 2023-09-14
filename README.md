@@ -14,40 +14,20 @@ You can use the `membraneframeworklabs/docker_membrane` docker image (in version
 docker run -it membraneframeworklabs/docker_membrane
 ```
 
-Once you are on the desired OS, clone the repository:
+To use that plugin in your project, add the following line to your deps in `mix.exs`:
 ```
-git clone https://github.com/membraneframework-labs/membrane_agora_plugin
-cd membrane_agora_plugin
+{:membrane_agora_plugin, "~> 0.1.0"}
 ```
 
-Then install the required Agora Server Gateway's SDK with:
-```
-chmod a+x install.sh
-./install.sh
-``` 
+Run `mix deps.get`.
 
-Finally, you can use the cloned repository as a dependency in `mix.exs` of your project:
+Then you need to set the LD_LIBRARY_PATH:
 ```
-deps() do
-    ... 
-    {:membrane_agora_plugin, path: <path to the cloned repository>},
-    ...
-end
-```
-and use the `Membrane.Agora.Sink` element.
-
-## Usage
-Before running any of the projects that use membrane_agora_plugin, make sure to set the `LD_LIBRARY_PATH`:
-```
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path to membrane_agora_plugin repository>/agora_sdk
-```
-You need to download all the elixir dependencies with:
-```
-mix deps.get
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path to your dependencies directory>/membrane_agora_plugin/agora_sdk
 ```
 
 As an example, you can run the `example.exs` script to see `Membrane.Agora.Sink` in action.
-First, you need to configure the following Agora's specific environmental variables:
+First you need to configure the following Agora's specific environmental variables:
 ```bash
   export AGORA_CHANNEL_NAME=<the name of the channel for which you have generated the temporary RTC token>
   export AGORA_TOKEN=<your Agora's temporary RTC token>
@@ -61,7 +41,8 @@ Remember that you need to use the same Agora parameters as you have specified in
 
 Finaly, type:
 ```
-mix run example.exs
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path to your dependencies directory>/membrane_agora_plugin/agora_sdk
+elixir example.exs
 ```
 and observe the web demo application.
 Once the pipeline is started, audio and video should start playing.
