@@ -41,8 +41,7 @@ Remember that you need to use the same Agora parameters as you have specified in
 
 Finaly, type:
 ```
-export MIX_INSTALL_DIR=`pwd`/mix_install_dir
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MIX_INSTALL_DIR/deps/membrane_agora_plugin/agora_sdk
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path to your dependencies directory>/membrane_agora_plugin/agora_sdk
 elixir example.exs
 ```
 and observe the web demo application.
