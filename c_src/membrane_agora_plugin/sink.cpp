@@ -36,6 +36,10 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   ccfg.clientRoleType = agora::rtc::CLIENT_ROLE_BROADCASTER;
   state->connection = state->service->createRtcConnection(ccfg);
 
+  // Cache initial i-frame at agora
+  auto s = state->connection->getAgoraParameter();
+  s->setBool("che.video.has_intra_request", false);
+
   // connecting
   auto connObserver = std::make_shared<ConnectionObserver>();
   state->connection->registerObserver(connObserver.get());
