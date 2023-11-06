@@ -1,7 +1,7 @@
 defmodule Membrane.Agora.Mixfile do
   use Mix.Project
 
-  @version "0.1.1"
+  @version "0.2.0"
   @github_url "https://github.com/membraneframework/membrane_agora_plugin"
 
   def project do
@@ -38,7 +38,7 @@ defmodule Membrane.Agora.Mixfile do
 
   defp deps do
     [
-      {:membrane_core, "~> 0.12.7"},
+      {:membrane_core, "~> 1.0"},
       {:membrane_h264_format, "~> 0.6.1"},
       {:membrane_aac_format, "~> 0.8.0"},
       {:unifex, "~> 1.1.0"},
