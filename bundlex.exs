@@ -36,6 +36,16 @@ defmodule Membrane.Agora.BundlexProject do
         interface: [:nif],
         preprocessor: Unifex,
         language: :cpp
+      ],
+      source: [
+        sources: ["source.cpp", "connection_observer.cpp"],
+        includes: ["agora_sdk/include/"],
+        libs: ["agora_rtc_sdk", "agora-ffmpeg"],
+        lib_dirs: ["agora_sdk/"],
+        deps: [unifex: :unifex],
+        interface: [:nif],
+        preprocessor: Unifex,
+        language: :cpp
       ]
     ]
   end
