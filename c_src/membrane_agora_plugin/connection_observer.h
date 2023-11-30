@@ -5,12 +5,15 @@
 #include <mutex>
 
 #include "NGIAgoraRtcConnection.h"
+#include "NGIAgoraLocalUser.h"
+
 
 #include "common.h"
 
 class ConnectionObserver : public agora::rtc::IRtcConnectionObserver {
 public:
   ConnectionObserver() : _is_connected(false) {}
+  ConnectionObserver(agora::agora_refptr<agora::rtc::IRtcConnection> connection) : _is_connected(false), _connection(connection) {}
 
   void waitUntilConnected();
 
@@ -66,7 +69,15 @@ public: // IRtcConnectionObserver
     UNUSED(reason);
   }
 
-  void onUserJoined(agora::user_id_t userId) override { UNUSED(userId); }
+  void onUserJoined(agora::user_id_t userId) override { 
+    printf("USER JOINED \n"); 
+    agora::rtc::VideoSubscriptionOptions options;
+    options.encodedFrameOnly=true;
+    options.type=agora::rtc::VIDEO_STREAM_TYPE::VIDEO_STREAM_LOW;
+    _connection->getLocalUser()->subscribeVideo(userId, options); 
+    _connection->getLocalUser()->subscribeAudio(userId); 
+    _connection->getLocalUser()->setPlaybackAudioFrameBeforeMixingParameters(2, 44100);
+  }
 
   void onUserLeft(agora::user_id_t userId,
 
@@ -93,4 +104,5 @@ private:
   std::atomic<bool> _is_connected;
   std::condition_variable _cv;
   std::mutex _lock;
+  agora::agora_refptr<agora::rtc::IRtcConnection> _connection;
 };

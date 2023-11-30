@@ -1,23 +1,22 @@
-defmodule Membrane.Agora.Sink do
+defmodule Membrane.Agora.Source do
   @moduledoc """
-  Membrane sink that wraps Agora's Server Gateway SDK.
+  Membrane source that wraps Agora's Server Gateway SDK.
 
   """
-  use Membrane.Sink
+  use Membrane.Source
 
   require Membrane.Pad, as: Pad
 
-  alias Membrane.Agora.Sink.Native
+  alias Membrane.Agora.Source.Native
+  alias Membrane.Buffer
 
-  def_input_pad :video,
-    availability: :on_request,
+  def_output_pad :video,
     accepted_format: %Membrane.H264{alignment: :au},
-    flow_control: :auto
+    flow_control: :push
 
-  def_input_pad :audio,
-    availability: :on_request,
+  def_output_pad :audio,
     accepted_format: Membrane.AAC,
-    flow_control: :auto
+    flow_control: :push
 
   def_options app_id: [
                 spec: String.t(),
@@ -61,10 +60,10 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_setup(_ctx, state) do
+  def handle_playing(_ctx, state) do
     {:ok, native_state} =
       try do
-        Native.create(state.app_id, state.token, state.channel_name, state.user_id)
+        Native.create(state.app_id, state.token, state.channel_name, state.user_id, self())
       rescue
         _e in UndefinedFunctionError ->
           raise """
@@ -76,50 +75,19 @@ defmodule Membrane.Agora.Sink do
           raise other_error
       end
 
-    {[], %{state | native_state: native_state}}
+    {[stream_format: {:video, %Membrane.H264{}}, stream_format: {:audio, %Membrane.AAC{}}],
+     %{state | native_state: native_state}}
   end
 
   @impl true
-  def handle_stream_format(Pad.ref(:video, _), stream_format, _ctx, state) do
-    {:ok, native_state} =
-      Native.update_video_stream_format(
-        stream_format.height,
-        stream_format.width,
-        state.native_state
-      )
-
-    state = %{state | native_state: native_state}
-    {[], state}
+  def handle_info({:agora_video_payload, payload}, _ctx, state) do
+    IO.inspect("video buffer received")
+    {[buffer: {:video, %Buffer{payload: payload}}], state}
   end
 
   @impl true
-  def handle_stream_format(Pad.ref(:audio, _), stream_format, _ctx, state) do
-    {:ok, native_state} =
-      Native.update_audio_stream_format(
-        stream_format.sample_rate,
-        stream_format.channels,
-        stream_format.samples_per_frame,
-        state.native_state
-      )
-
-    {[], %{state | native_state: native_state}}
-  end
-
-  @impl true
-  def handle_buffer(Pad.ref(:video, _), buffer, _ctx, state) do
-    :ok =
-      Native.write_video_data(
-        buffer.payload,
-        buffer.metadata.h264.key_frame?,
-        state.native_state
-      )
-
-    {[], state}
-  end
-
-  @impl true
-  def handle_buffer(Pad.ref(:audio, _), buffer, _ctx, state) do
-    :ok = Native.write_audio_data(buffer.payload, state.native_state)
-    {[], state}
+  def handle_info({:agora_audio_payload, payload}, _ctx, state) do
+    IO.inspect("audio buffer received")
+    {[buffer: {:audio, %Buffer{payload: payload}}], state}
   end
 end
