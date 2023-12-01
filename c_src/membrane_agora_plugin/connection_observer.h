@@ -75,8 +75,7 @@ public: // IRtcConnectionObserver
     options.encodedFrameOnly=true;
     options.type=agora::rtc::VIDEO_STREAM_TYPE::VIDEO_STREAM_LOW;
     _connection->getLocalUser()->subscribeVideo(userId, options); 
-    _connection->getLocalUser()->subscribeAudio(userId); 
-    _connection->getLocalUser()->setPlaybackAudioFrameBeforeMixingParameters(2, 44100);
+    _connection->getLocalUser()->subscribeAudio(userId);
   }
 
   void onUserLeft(agora::user_id_t userId,

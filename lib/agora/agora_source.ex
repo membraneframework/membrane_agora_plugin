@@ -81,13 +81,11 @@ defmodule Membrane.Agora.Source do
 
   @impl true
   def handle_info({:agora_video_payload, payload}, _ctx, state) do
-    IO.inspect("video buffer received")
     {[buffer: {:video, %Buffer{payload: payload}}], state}
   end
 
   @impl true
   def handle_info({:agora_audio_payload, payload}, _ctx, state) do
-    IO.inspect("audio buffer received")
     {[buffer: {:audio, %Buffer{payload: payload}}], state}
   end
 end
