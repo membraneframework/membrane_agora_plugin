@@ -78,12 +78,13 @@ defmodule Membrane.Agora.Source do
   end
 
   @impl true
-  def handle_info({:agora_video_payload, payload}, _ctx, state) do
-    {[buffer: {:video, %Buffer{payload: payload}}], state}
+  def handle_info({:agora_video_payload, payload, id}, _ctx, state) do
+    IO.inspect(id, label: :Xd123)
+    {[buffer: {:video, %Buffer{payload: payload, metadata: %{id: id}}}], state}
   end
 
   @impl true
-  def handle_info({:agora_audio_payload, payload}, _ctx, state) do
-    {[buffer: {:audio, %Buffer{payload: payload}}], state}
+  def handle_info({:agora_audio_payload, payload, id}, _ctx, state) do
+    {[buffer: {:audio, %Buffer{payload: payload, metadata: %{id: id}}}], state}
   end
 end
