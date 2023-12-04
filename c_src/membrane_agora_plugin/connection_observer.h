@@ -10,48 +10,48 @@
 #include "common.h"
 
 using namespace agora;
+using namespace agora::rtc;
 
-class ConnectionObserver : public rtc::IRtcConnectionObserver {
+class ConnectionObserver : public IRtcConnectionObserver {
 public:
-  ConnectionObserver(agora_refptr<rtc::IRtcConnection> connection)
+  ConnectionObserver(agora_refptr<IRtcConnection> connection)
       : _is_connected(false), _connection(connection) {}
 
   void waitUntilConnected();
 
 public: // IRtcConnectionObserver
-  void onConnected(const rtc::TConnectionInfo &connectionInfo,
-                   rtc::CONNECTION_CHANGED_REASON_TYPE reason);
+  void onConnected(const TConnectionInfo &connectionInfo,
+                   CONNECTION_CHANGED_REASON_TYPE reason);
 
-  void onConnecting(const rtc::TConnectionInfo &connectionInfo,
-                    rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
+  void onConnecting(const TConnectionInfo &connectionInfo,
+                    CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void onDisconnected(const rtc::TConnectionInfo &connectionInfo,
-                      rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
+  void onDisconnected(const TConnectionInfo &connectionInfo,
+                      CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void onReconnecting(const rtc::TConnectionInfo &connectionInfo,
-                      rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
+  void onReconnecting(const TConnectionInfo &connectionInfo,
+                      CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void onReconnected(const rtc::TConnectionInfo &connectionInfo,
-                     rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
+  void onReconnected(const TConnectionInfo &connectionInfo,
+                     CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void onConnectionLost(const rtc::TConnectionInfo &connectionInfo) override;
-  void onLastmileQuality(const rtc::QUALITY_TYPE quality) override;
+  void onConnectionLost(const TConnectionInfo &connectionInfo) override;
+  void onLastmileQuality(const QUALITY_TYPE quality) override;
 
   void onTokenPrivilegeWillExpire(const char *token) override;
 
   void onTokenPrivilegeDidExpire() override;
 
-  void onConnectionFailure(const rtc::TConnectionInfo &connectionInfo,
-                           rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
+  void onConnectionFailure(const TConnectionInfo &connectionInfo,
+                           CONNECTION_CHANGED_REASON_TYPE reason) override;
 
   void onUserJoined(user_id_t userId) override;
 
-  void onUserLeft(user_id_t userId,
-                  rtc::USER_OFFLINE_REASON_TYPE reason) override;
+  void onUserLeft(user_id_t userId, USER_OFFLINE_REASON_TYPE reason) override;
 
-  void onTransportStats(const rtc::RtcStats &stats) override;
+  void onTransportStats(const RtcStats &stats) override;
 
-  void onLastmileProbeResult(const rtc::LastmileProbeResult &result) override;
+  void onLastmileProbeResult(const LastmileProbeResult &result) override;
 
   void onChannelMediaRelayStateChanged(int state, int code) override;
 
@@ -59,5 +59,5 @@ private:
   std::atomic<bool> _is_connected;
   std::condition_variable _cv;
   std::mutex _lock;
-  agora_refptr<rtc::IRtcConnection> _connection;
+  agora_refptr<IRtcConnection> _connection;
 };

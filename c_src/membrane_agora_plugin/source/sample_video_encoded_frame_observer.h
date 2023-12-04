@@ -4,6 +4,7 @@
 #include <unifex/unifex.h>
 
 using namespace agora;
+using namespace agora::rtc;
 
 class SampleVideoEncodedFrameObserver
     : public media::IVideoEncodedFrameObserver {
@@ -15,6 +16,6 @@ public:
       : _destination(destination) {}
 
   bool OnEncodedVideoFrame(
-      rtc::uid_t uid, const uint8_t *imageBuffer, size_t length,
-      const rtc::EncodedVideoFrameInfo &videoEncodedFrameInfo) override;
+      uid_t uid, const uint8_t *imageBuffer, size_t length,
+      const EncodedVideoFrameInfo &videoEncodedFrameInfo) override;
 };

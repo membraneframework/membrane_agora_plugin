@@ -4,8 +4,8 @@
 #include <unifex/unifex.h>
 
 bool SampleVideoEncodedFrameObserver::OnEncodedVideoFrame(
-    rtc::uid_t uid, const uint8_t *imageBuffer, size_t length,
-    const rtc::EncodedVideoFrameInfo &videoEncodedFrameInfo) {
+    uid_t uid, const uint8_t *imageBuffer, size_t length,
+    const EncodedVideoFrameInfo &videoEncodedFrameInfo) {
   printf("ENCODED VIDEO FRAME RECEIVED %d \n", uid);
   UnifexEnv *env = unifex_alloc_env(NULL);
   UnifexPayload payload;

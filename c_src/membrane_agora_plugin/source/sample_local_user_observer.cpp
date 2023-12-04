@@ -3,37 +3,37 @@
 void SampleLocalUserObserver::onAudioTrackPublishSuccess(
     agora_refptr<ILocalAudioTrack> audioTrack) {}
 void SampleLocalUserObserver::onLocalAudioTrackStateChanged(
-    agora_refptr<rtc::ILocalAudioTrack> audioTrack,
-    LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR errorCode) {}
+    agora_refptr<ILocalAudioTrack> audioTrack, LOCAL_AUDIO_STREAM_STATE state,
+    LOCAL_AUDIO_STREAM_ERROR errorCode) {}
 void SampleLocalUserObserver::onLocalAudioTrackStatistics(
     const LocalAudioStats &stats) {}
 void SampleLocalUserObserver::onRemoteAudioTrackStatistics(
-    agora_refptr<rtc::IRemoteAudioTrack> audioTrack,
+    agora_refptr<IRemoteAudioTrack> audioTrack,
     const RemoteAudioTrackStats &stats) {}
 void SampleLocalUserObserver::onUserAudioTrackSubscribed(
-    user_id_t userId, agora_refptr<rtc::IRemoteAudioTrack> audioTrack) {
+    user_id_t userId, agora_refptr<IRemoteAudioTrack> audioTrack) {
   printf("audioTrackSubscribed\n");
 }
 void SampleLocalUserObserver::onUserAudioTrackStateChanged(
-    user_id_t userId, agora_refptr<rtc::IRemoteAudioTrack> audioTrack,
+    user_id_t userId, agora_refptr<IRemoteAudioTrack> audioTrack,
     REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) {}
 void SampleLocalUserObserver::onVideoTrackPublishSuccess(
     agora_refptr<ILocalVideoTrack> videoTrack) {}
 void SampleLocalUserObserver::onLocalVideoTrackStateChanged(
-    agora_refptr<rtc::ILocalVideoTrack> videoTrack,
-    LOCAL_VIDEO_STREAM_STATE state, LOCAL_VIDEO_STREAM_ERROR errorCode) {}
+    agora_refptr<ILocalVideoTrack> videoTrack, LOCAL_VIDEO_STREAM_STATE state,
+    LOCAL_VIDEO_STREAM_ERROR errorCode) {}
 void SampleLocalUserObserver::onLocalVideoTrackStatistics(
-    agora_refptr<rtc::ILocalVideoTrack> videoTrack,
+    agora_refptr<ILocalVideoTrack> videoTrack,
     const LocalVideoTrackStats &stats) {}
 void SampleLocalUserObserver::onUserVideoTrackStateChanged(
-    user_id_t userId, agora_refptr<rtc::IRemoteVideoTrack> videoTrack,
+    user_id_t userId, agora_refptr<IRemoteVideoTrack> videoTrack,
     REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) {}
 void SampleLocalUserObserver::onFirstRemoteVideoFrameRendered(user_id_t userId,
                                                               int width,
                                                               int height,
                                                               int elapsed) {}
 void SampleLocalUserObserver::onRemoteVideoTrackStatistics(
-    agora_refptr<rtc::IRemoteVideoTrack> videoTrack,
+    agora_refptr<IRemoteVideoTrack> videoTrack,
     const RemoteVideoTrackStats &stats) {}
 void SampleLocalUserObserver::onAudioSubscribeStateChanged(
     const char *channel, user_id_t userId, STREAM_SUBSCRIBE_STATE oldState,
@@ -69,5 +69,5 @@ void SampleLocalUserObserver::onFirstRemoteVideoFrame(user_id_t userId,
                                                       int elapsed) {}
 
 void SampleLocalUserObserver::onUserVideoTrackSubscribed(
-    user_id_t userId, rtc::VideoTrackInfo trackInfo,
-    agora_refptr<rtc::IRemoteVideoTrack> videoTrack) {}
+    user_id_t userId, VideoTrackInfo trackInfo,
+    agora_refptr<IRemoteVideoTrack> videoTrack) {}
