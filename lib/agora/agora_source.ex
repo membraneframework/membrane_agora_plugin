@@ -79,7 +79,6 @@ defmodule Membrane.Agora.Source do
 
   @impl true
   def handle_info({:agora_video_payload, payload, id}, _ctx, state) do
-    IO.inspect(id, label: :Xd123)
     {[buffer: {:video, %Buffer{payload: payload, metadata: %{id: id}}}], state}
   end
 

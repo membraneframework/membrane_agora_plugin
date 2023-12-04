@@ -1,6 +1,6 @@
-#include "_generated/source.h"
+#include "../_generated/source.h"
+#include "../source.h"
 #include "sample_audio_frame_observer.h"
-#include "source.h"
 #include <unifex/payload.h>
 
 bool SampleAudioFrameObserver::onRecordAudioFrame(const char *channelId,
