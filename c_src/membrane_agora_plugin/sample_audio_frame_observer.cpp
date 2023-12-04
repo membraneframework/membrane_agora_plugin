@@ -36,7 +36,7 @@ bool SampleAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(
   memcpy(payload.data, audioFrame.buffer, size);
 
   auto res = send_agora_audio_payload(env, _destination, UNIFEX_SEND_THREADED,
-                                      &payload);
+                                      &payload, uid);
   unifex_payload_release(&payload);
   unifex_free_env(env);
   return true;

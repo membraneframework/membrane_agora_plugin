@@ -12,7 +12,8 @@ bool SampleVideoEncodedFrameObserver::OnEncodedVideoFrame(
   unifex_payload_alloc(env, UNIFEX_PAYLOAD_BINARY, length, &payload);
   memcpy(payload.data, imageBuffer, length);
 
-  send_agora_video_payload(env, _destination, UNIFEX_SEND_THREADED, &payload);
+  send_agora_video_payload(env, _destination, UNIFEX_SEND_THREADED, &payload,
+                           uid);
 
   unifex_payload_release(&payload);
   unifex_free_env(env);
