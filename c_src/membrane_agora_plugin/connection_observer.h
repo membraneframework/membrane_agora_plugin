@@ -13,7 +13,6 @@ using namespace agora;
 
 class ConnectionObserver : public rtc::IRtcConnectionObserver {
 public:
-  // ConnectionObserver() : _is_connected(false) {}
   ConnectionObserver(agora_refptr<rtc::IRtcConnection> connection)
       : _is_connected(false), _connection(connection) {}
 
