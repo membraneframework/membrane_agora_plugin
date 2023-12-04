@@ -3,7 +3,7 @@ defmodule Membrane.Agora.IntegrationTest do
 
   import Membrane.Testing.Assertions
 
-  defmodule SourcePipeline do
+  defmodule PipelineWithAgoraSource do
     use Membrane.Pipeline
 
     @output_video_path "test_output_video.h264"
@@ -24,17 +24,17 @@ defmodule Membrane.Agora.IntegrationTest do
           user_id: @user_id
         })
         |> via_out(:video)
-        |> child(%Membrane.File.Sink{location: @output_video_path}),
+        |> child(:video_sink, %Membrane.File.Sink{location: @output_video_path}),
         get_child(:source)
         |> via_out(:audio)
-        |> child(%Membrane.File.Sink{location: @output_audio_path})
+        |> child(:audio_sink, %Membrane.File.Sink{location: @output_audio_path})
       ]
 
       {[spec: spec], %{}}
     end
   end
 
-  defmodule SinkPipeline do
+  defmodule PipelineWithAgoraSink do
     use Membrane.Pipeline
 
     @input_video_path "test/fixtures/in_video.h264"
@@ -73,8 +73,11 @@ defmodule Membrane.Agora.IntegrationTest do
   end
 
   test "if the data is sent to Agora works properly" do
-    {:ok, _supervisor, sink_pipeline} = Membrane.Pipeline.start_link(SinkPipeline)
-    {:ok, _supervisor, source_pipeline} = Membrane.Pipeline.start_link(SourcePipeline)
-    assert_start_of_stream(source_pipeline, :sink, :input, 100_000)
+    {:ok, _supervisor, sink_pipeline} = Membrane.Pipeline.start_link(PipelineWithAgoraSink)
+
+    {:ok, _supervisor, source_pipeline} =
+      Membrane.Testing.Pipeline.start_link(module: PipelineWithAgoraSource)
+
+    assert_start_of_stream(source_pipeline, :video_sink, :input, 100_000)
   end
 end
