@@ -43,7 +43,7 @@ defmodule Membrane.Agora.Sink do
                 description: """
                   User ID, must contain only numbers (0-9).
 
-                  If set to "0" (default), the user ID of the Agora's channel will be chosen automatically.
+                  If set to "0" (default), the user ID will be chosen automatically.
                 """
               ]
 

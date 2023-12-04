@@ -28,6 +28,8 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   agora::rtc::RtcConnectionConfiguration ccfg;
   ccfg.autoSubscribeAudio = true;
   ccfg.autoSubscribeVideo = true;
+  ccfg.audioRecvMediaPacket = false;
+  ccfg.audioRecvEncodedFrame = false;
   ccfg.clientRoleType = agora::rtc::CLIENT_ROLE_AUDIENCE;
   ccfg.enableAudioRecordingOrPlayout = false;
   state->connection = state->service->createRtcConnection(ccfg);
@@ -61,8 +63,10 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   state->connection->getLocalUser()->registerVideoEncodedFrameObserver(
       state->videoEncodedFrameObserver.get());
 
+  state->connection->getLocalUser()->setPlaybackAudioFrameParameters(2, 44100);
   state->connection->getLocalUser()
       ->setPlaybackAudioFrameBeforeMixingParameters(2, 44100);
+
   state->connection->getLocalUser()->registerAudioFrameObserver(
       state->audioFrameObserver.get());
 

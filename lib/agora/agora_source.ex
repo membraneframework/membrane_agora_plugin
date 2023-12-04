@@ -13,7 +13,7 @@ defmodule Membrane.Agora.Source do
     flow_control: :push
 
   def_output_pad :audio,
-    accepted_format: Membrane.AAC,
+    accepted_format: %Membrane.RawAudio{sample_rate: 44_100, channels: 2, sample_format: :s16le},
     flow_control: :push
 
   def_options app_id: [
@@ -25,7 +25,7 @@ defmodule Membrane.Agora.Source do
               channel_name: [
                 spec: String.t(),
                 descritpion: """
-                A name of a channel to which the sink should connect.
+                A name of a channel to which the source should connect.
                 """
               ],
               token: [
@@ -40,7 +40,7 @@ defmodule Membrane.Agora.Source do
                 description: """
                   User ID, must contain only numbers (0-9).
 
-                  If set to "0" (default), the user ID of the Agora's channel will be chosen automatically.
+                  If set to "0" (default), the user ID will be chosen automatically.
                 """
               ]
 
@@ -73,8 +73,11 @@ defmodule Membrane.Agora.Source do
           raise other_error
       end
 
-    {[stream_format: {:video, %Membrane.H264{}}, stream_format: {:audio, %Membrane.AAC{}}],
-     %{state | native_state: native_state}}
+    {[
+       stream_format: {:video, %Membrane.H264{}},
+       stream_format:
+         {:audio, %Membrane.RawAudio{channels: 2, sample_rate: 44_100, sample_format: :s16le}}
+     ], %{state | native_state: native_state}}
   end
 
   @impl true
