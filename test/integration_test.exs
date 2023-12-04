@@ -34,7 +34,8 @@ defmodule Membrane.Agora.IntegrationTest do
   defmodule SinkPipeline do
     use Membrane.Pipeline
 
-    @input_path "test/fixtures/in_video.h264"
+    @input_video_path "test/fixtures/in_video.h264"
+    @input_audio_path "test/fixtures/in_audio.aac"
 
     @channel_name System.get_env("AGORA_CHANNEL_NAME", "")
     @token System.get_env("AGORA_TOKEN", "")
@@ -44,17 +45,25 @@ defmodule Membrane.Agora.IntegrationTest do
     @impl true
     def handle_init(_ctx, _options) do
       spec =
-        child(:source, %Membrane.File.Source{location: @input_path})
-        |> child(:parser, %Membrane.H264.Parser{
-          generate_best_effort_timestamps: %{framerate: {30, 1}}
-        })
-        |> via_in(:video)
-        |> child(:sink, %Membrane.Agora.Sink{
-          channel_name: @channel_name,
-          token: @token,
-          app_id: @app_id,
-          user_id: @user_id
-        })
+        [
+          child(%Membrane.File.Source{location: @input_video_path})
+          |> child(%Membrane.H264.Parser{
+            generate_best_effort_timestamps: %{framerate: {30, 1}}
+          })
+          |> child(Membrane.Realtimer)
+          |> via_in(:video)
+          |> child(:sink, %Membrane.Agora.Sink{
+            channel_name: @channel_name,
+            token: @token,
+            app_id: @app_id,
+            user_id: @user_id
+          }),
+          child(%Membrane.File.Source{location: @input_audio_path})
+          |> child(Membrane.AAC.Parser)
+          |> child(Membrane.Realtimer)
+          |> via_in(:audio)
+          |> get_child(:sink)
+        ]
 
       {[spec: spec], %{}}
     end
