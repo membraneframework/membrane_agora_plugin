@@ -4,6 +4,7 @@
 #include <unifex/unifex.h>
 
 using namespace agora;
+using namespace agora::rtc;
 
 class SampleAudioFrameObserver : public media::IAudioFrameObserver {
 private:
@@ -20,6 +21,6 @@ public:
                          AudioFrame &audioFrame) override;
   bool onEarMonitoringAudioFrame(AudioFrame &audioFrame) override;
 
-  bool onPlaybackAudioFrameBeforeMixing(const char *channelId, rtc::uid_t uid,
+  bool onPlaybackAudioFrameBeforeMixing(const char *channelId, uid_t uid,
                                         AudioFrame &audioFrame) override;
 };

@@ -3,9 +3,6 @@
 #include "source/sample_local_user_observer.h"
 #include "source/sample_video_encoded_frame_observer.h"
 
-using namespace agora;
-using namespace agora::rtc;
-
 UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
                    char *userId, UnifexPid destination) {
 
