@@ -12,5 +12,5 @@ spec(
   ) :: {:ok :: label, state} | {:error :: label, reason :: atom}
 )
 
-sends {:agora_audio_payload :: label, payload, id :: int}
+sends {:agora_audio_payload :: label, payload, id :: string}
 sends {:agora_video_payload :: label, payload, id :: int}

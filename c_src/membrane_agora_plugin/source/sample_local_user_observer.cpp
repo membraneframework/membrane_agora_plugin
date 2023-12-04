@@ -11,9 +11,7 @@ void SampleLocalUserObserver::onRemoteAudioTrackStatistics(
     agora_refptr<IRemoteAudioTrack> audioTrack,
     const RemoteAudioTrackStats &stats) {}
 void SampleLocalUserObserver::onUserAudioTrackSubscribed(
-    user_id_t userId, agora_refptr<IRemoteAudioTrack> audioTrack) {
-  printf("audioTrackSubscribed\n");
-}
+    user_id_t userId, agora_refptr<IRemoteAudioTrack> audioTrack) {}
 void SampleLocalUserObserver::onUserAudioTrackStateChanged(
     user_id_t userId, agora_refptr<IRemoteAudioTrack> audioTrack,
     REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) {}

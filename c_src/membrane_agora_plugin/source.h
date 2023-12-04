@@ -21,7 +21,7 @@ typedef struct {
   std::shared_ptr<agora::rtc::ILocalUserObserver> localUserObserver;
   std::shared_ptr<agora::media::IVideoEncodedFrameObserver>
       videoEncodedFrameObserver;
-  std::shared_ptr<agora::media::IAudioFrameObserver> audioFrameObserver;
+  std::shared_ptr<agora::media::IAudioFrameObserverBase> audioFrameObserver;
 } SourceState;
 
 #include "_generated/source.h"
