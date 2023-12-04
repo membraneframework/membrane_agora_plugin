@@ -28,7 +28,7 @@ defmodule Membrane.Agora.BundlexProject do
   defp natives(_platform) do
     [
       sink: [
-        sources: ["sink.cpp"],
+        sources: ["sink.cpp", "connection_observer.cpp"],
         includes: ["agora_sdk/include/"],
         libs: ["agora_rtc_sdk", "agora-ffmpeg"],
         lib_dirs: ["agora_sdk/"],
