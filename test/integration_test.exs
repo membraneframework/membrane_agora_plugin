@@ -6,7 +6,8 @@ defmodule Membrane.Agora.IntegrationTest do
   defmodule SourcePipeline do
     use Membrane.Pipeline
 
-    @output_path "test_output_video.h264"
+    @output_video_path "test_output_video.h264"
+    @output_audio_path "test_output_audio.pcm"
 
     @channel_name System.get_env("AGORA_CHANNEL_NAME", "")
     @token System.get_env("AGORA_TOKEN", "")
@@ -23,8 +24,10 @@ defmodule Membrane.Agora.IntegrationTest do
           user_id: @user_id
         })
         |> via_out(:video)
-        |> child(:sink, %Membrane.File.Sink{location: @output_path}),
-        get_child(:source) |> via_out(:audio) |> child(Membrane.Debug.Sink)
+        |> child(%Membrane.File.Sink{location: @output_video_path}),
+        get_child(:source)
+        |> via_out(:audio)
+        |> child(%Membrane.File.Sink{location: @output_audio_path})
       ]
 
       {[spec: spec], %{}}
