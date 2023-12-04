@@ -1,4 +1,7 @@
 #include "source.h"
+#include "source/sample_audio_frame_observer.h"
+#include "source/sample_local_user_observer.h"
+#include "source/sample_video_encoded_frame_observer.h"
 
 using namespace agora;
 using namespace agora::rtc;

@@ -13,12 +13,8 @@
 #include "NGIAgoraRtcConnection.h"
 
 #include "connection_observer.h"
-#include "sample_audio_frame_observer.h"
-#include "sample_local_user_observer.h"
-#include "sample_video_encoded_frame_observer.h"
 
 typedef struct {
-  // Agora SDK
   agora::base::IAgoraService *service = NULL;
   agora::agora_refptr<agora::rtc::IRtcConnection> connection;
   std::shared_ptr<ConnectionObserver> connObserver;

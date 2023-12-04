@@ -1,4 +1,4 @@
-#include "_generated/source.h"
+#include "../_generated/source.h"
 #include "sample_video_encoded_frame_observer.h"
 #include <unifex/payload.h>
 #include <unifex/unifex.h>
