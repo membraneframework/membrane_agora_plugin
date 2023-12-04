@@ -6,7 +6,7 @@
 using namespace agora;
 using namespace agora::rtc;
 
-class SampleAudioFrameObserver : public media::IAudioFrameObserver {
+class SampleAudioFrameObserver : public media::IAudioFrameObserverBase {
 private:
   UnifexPid _destination;
 
@@ -21,6 +21,7 @@ public:
                          AudioFrame &audioFrame) override;
   bool onEarMonitoringAudioFrame(AudioFrame &audioFrame) override;
 
-  bool onPlaybackAudioFrameBeforeMixing(const char *channelId, uid_t uid,
+  bool onPlaybackAudioFrameBeforeMixing(const char *channelId,
+                                        media::base::user_id_t uid,
                                         AudioFrame &audioFrame) override;
 };

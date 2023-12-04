@@ -68,7 +68,6 @@ void ConnectionObserver::onConnectionFailure(
 }
 
 void ConnectionObserver::onUserJoined(user_id_t userId) {
-  printf("USER JOINED \n");
   rtc::VideoSubscriptionOptions options;
   options.encodedFrameOnly = true;
   options.type = rtc::VIDEO_STREAM_TYPE::VIDEO_STREAM_LOW;

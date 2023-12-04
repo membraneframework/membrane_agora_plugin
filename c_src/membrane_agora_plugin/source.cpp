@@ -26,12 +26,13 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
 
   // connection configuration
   agora::rtc::RtcConnectionConfiguration ccfg;
+
   ccfg.autoSubscribeAudio = true;
   ccfg.autoSubscribeVideo = true;
   ccfg.audioRecvMediaPacket = false;
   ccfg.audioRecvEncodedFrame = false;
   ccfg.clientRoleType = agora::rtc::CLIENT_ROLE_AUDIENCE;
-  ccfg.enableAudioRecordingOrPlayout = false;
+  ccfg.enableAudioRecordingOrPlayout = true;
   state->connection = state->service->createRtcConnection(ccfg);
 
   state->connObserver = std::make_shared<ConnectionObserver>(state->connection);
@@ -45,7 +46,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   }
 
   state->connObserver->waitUntilConnected();
-  printf("Connected to AGORA channel\n");
 
   agora::rtc::VideoSubscriptionOptions options;
   state->connection->getLocalUser()->subscribeAllVideo(options);
@@ -77,8 +77,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
 }
 
 void handle_destroy_state(UnifexEnv *env, SourceState *state) {
-  printf("AGORA: handle_destroy_state");
-
   state->connection->unregisterObserver(state->connObserver.get());
   state->connObserver.reset();
 

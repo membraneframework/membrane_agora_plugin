@@ -86,7 +86,7 @@ defmodule Membrane.Agora.Source do
   end
 
   @impl true
-  def handle_info({:agora_audio_payload, payload, id}, _ctx, state) do
-    {[buffer: {:audio, %Buffer{payload: payload, metadata: %{id: id}}}], state}
+  def handle_info({:agora_audio_payload, payload, id_str}, _ctx, state) do
+    {[buffer: {:audio, %Buffer{payload: payload, metadata: %{id: inspect(id_str)}}}], state}
   end
 end
