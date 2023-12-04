@@ -28,7 +28,7 @@ defmodule Membrane.Agora.BundlexProject do
   defp natives(_platform) do
     [
       sink: [
-        sources: ["sink.cpp", "connection_observer.cpp"],
+        sources: ["sink.cpp"],
         includes: ["agora_sdk/include/"],
         libs: ["agora_rtc_sdk", "agora-ffmpeg"],
         lib_dirs: ["agora_sdk/"],
@@ -38,7 +38,7 @@ defmodule Membrane.Agora.BundlexProject do
         language: :cpp
       ],
       source: [
-        sources: ["source.cpp", "connection_observer.cpp"],
+        sources: ["source.cpp", "connection_observer.cpp", "sample_audio_frame_observer.cpp", "sample_video_encoded_frame_observer.cpp", "sample_local_user_observer.cpp"],
         includes: ["agora_sdk/include/"],
         libs: ["agora_rtc_sdk", "agora-ffmpeg"],
         lib_dirs: ["agora_sdk/"],

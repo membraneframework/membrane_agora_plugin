@@ -4,104 +4,61 @@
 #include <condition_variable>
 #include <mutex>
 
-#include "NGIAgoraRtcConnection.h"
 #include "NGIAgoraLocalUser.h"
-
+#include "NGIAgoraRtcConnection.h"
 
 #include "common.h"
 
-class ConnectionObserver : public agora::rtc::IRtcConnectionObserver {
+using namespace agora;
+
+class ConnectionObserver : public rtc::IRtcConnectionObserver {
 public:
-  ConnectionObserver() : _is_connected(false) {}
-  ConnectionObserver(agora::agora_refptr<agora::rtc::IRtcConnection> connection) : _is_connected(false), _connection(connection) {}
+  // ConnectionObserver() : _is_connected(false) {}
+  ConnectionObserver(agora_refptr<rtc::IRtcConnection> connection)
+      : _is_connected(false), _connection(connection) {}
 
   void waitUntilConnected();
 
 public: // IRtcConnectionObserver
-  void onConnected(const agora::rtc::TConnectionInfo &connectionInfo,
-                   agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
+  void onConnected(const rtc::TConnectionInfo &connectionInfo,
+                   rtc::CONNECTION_CHANGED_REASON_TYPE reason);
 
-  void
-  onConnecting(const agora::rtc::TConnectionInfo &connectionInfo,
-               agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
-    UNUSED(connectionInfo);
-    UNUSED(reason);
-  }
+  void onConnecting(const rtc::TConnectionInfo &connectionInfo,
+                    rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void
-  onDisconnected(const agora::rtc::TConnectionInfo &connectionInfo,
-                 agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
-    UNUSED(connectionInfo);
-    UNUSED(reason);
-  }
+  void onDisconnected(const rtc::TConnectionInfo &connectionInfo,
+                      rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void
-  onReconnecting(const agora::rtc::TConnectionInfo &connectionInfo,
-                 agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
-    UNUSED(connectionInfo);
-    UNUSED(reason);
-  }
+  void onReconnecting(const rtc::TConnectionInfo &connectionInfo,
+                      rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void
-  onReconnected(const agora::rtc::TConnectionInfo &connectionInfo,
-                agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
-    UNUSED(connectionInfo);
-    UNUSED(reason);
-  }
+  void onReconnected(const rtc::TConnectionInfo &connectionInfo,
+                     rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void
-  onConnectionLost(const agora::rtc::TConnectionInfo &connectionInfo) override {
-    UNUSED(connectionInfo);
-  }
+  void onConnectionLost(const rtc::TConnectionInfo &connectionInfo) override;
+  void onLastmileQuality(const rtc::QUALITY_TYPE quality) override;
 
-  void onLastmileQuality(const agora::rtc::QUALITY_TYPE quality) override {
-    UNUSED(quality);
-  }
+  void onTokenPrivilegeWillExpire(const char *token) override;
 
-  void onTokenPrivilegeWillExpire(const char *token) override { UNUSED(token); }
+  void onTokenPrivilegeDidExpire() override;
 
-  void onTokenPrivilegeDidExpire() override {}
+  void onConnectionFailure(const rtc::TConnectionInfo &connectionInfo,
+                           rtc::CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  void onConnectionFailure(
-      const agora::rtc::TConnectionInfo &connectionInfo,
-      agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason) override {
-    UNUSED(connectionInfo);
-    UNUSED(reason);
-  }
+  void onUserJoined(user_id_t userId) override;
 
-  void onUserJoined(agora::user_id_t userId) override { 
-    printf("USER JOINED \n"); 
-    agora::rtc::VideoSubscriptionOptions options;
-    options.encodedFrameOnly=true;
-    options.type=agora::rtc::VIDEO_STREAM_TYPE::VIDEO_STREAM_LOW;
-    _connection->getLocalUser()->subscribeVideo(userId, options); 
-    _connection->getLocalUser()->subscribeAudio(userId);
-  }
+  void onUserLeft(user_id_t userId,
+                  rtc::USER_OFFLINE_REASON_TYPE reason) override;
 
-  void onUserLeft(agora::user_id_t userId,
+  void onTransportStats(const rtc::RtcStats &stats) override;
 
-                  agora::rtc::USER_OFFLINE_REASON_TYPE reason) override {
-    UNUSED(userId);
-    UNUSED(reason);
-  }
+  void onLastmileProbeResult(const rtc::LastmileProbeResult &result) override;
 
-  void onTransportStats(const agora::rtc::RtcStats &stats) override {
-    UNUSED(stats);
-  }
-
-  void onLastmileProbeResult(
-      const agora::rtc::LastmileProbeResult &result) override {
-    UNUSED(result);
-  }
-
-  void onChannelMediaRelayStateChanged(int state, int code) override {
-    UNUSED(state);
-    UNUSED(code);
-  }
+  void onChannelMediaRelayStateChanged(int state, int code) override;
 
 private:
   std::atomic<bool> _is_connected;
   std::condition_variable _cv;
   std::mutex _lock;
-  agora::agora_refptr<agora::rtc::IRtcConnection> _connection;
+  agora_refptr<rtc::IRtcConnection> _connection;
 };

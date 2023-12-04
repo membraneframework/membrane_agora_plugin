@@ -41,7 +41,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   s->setBool("che.video.has_intra_request", false);
 
   // connecting
-  auto connObserver = std::make_shared<ConnectionObserver>();
+  auto connObserver = std::make_shared<ConnectionObserver>(state->connection);
   state->connection->registerObserver(connObserver.get());
 
   int connection_res = state->connection->connect(token, channelId, userId);
