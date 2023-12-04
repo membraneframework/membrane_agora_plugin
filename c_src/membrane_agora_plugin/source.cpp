@@ -63,7 +63,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   state->connection->getLocalUser()->registerVideoEncodedFrameObserver(
       state->videoEncodedFrameObserver.get());
 
-  state->connection->getLocalUser()->setPlaybackAudioFrameParameters(2, 44100);
   state->connection->getLocalUser()
       ->setPlaybackAudioFrameBeforeMixingParameters(2, 44100);
 
