@@ -5,8 +5,6 @@ defmodule Membrane.Agora.Source do
   """
   use Membrane.Source
 
-  require Membrane.Pad, as: Pad
-
   alias Membrane.Agora.Source.Native
   alias Membrane.Buffer
 
