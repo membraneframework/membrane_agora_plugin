@@ -76,7 +76,8 @@ defmodule Membrane.Agora.Source do
     {[
        stream_format: {:video, %Membrane.H264{}},
        stream_format:
-         {:audio, %Membrane.RawAudio{channels: 2, sample_rate: 44_100, sample_format: :s16le}}
+         {:audio, %Membrane.RawAudio{channels: 2, sample_rate: 44_100, sample_format: :s16le}},
+       notify_parent: :agora_connected
      ], %{state | native_state: native_state}}
   end
 
