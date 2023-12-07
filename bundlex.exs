@@ -13,26 +13,28 @@ defmodule Membrane.Agora.BundlexProject do
   end
 
   def project do
-    case get_target() do
+    url = case get_target() do
       %{os: "linux", architecture: :x86_64} ->
-        System.shell("./install.sh https://download.agora.io/sdk/release/Agora-RTC-x86_64-linux-gnu-v3.8.202.20-20220627_152601-214165.tgz")
+        "https://download.agora.io/sdk/release/Agora-RTC-x86_64-linux-gnu-v3.8.202.20-20220627_152601-214165.tgz"
 
       other_target ->
         url = System.get_env("AGORA_SDK_URL")
         if url do
-          {_output, result} = System.shell("./install.sh #{url}")
-          if result != 0 do
-            IO.warn("""
-            Couldn't fetch SDK from the following URL: #{url}
-            """)
-          end
+          url
         else
           IO.warn("""
           Agora's Server Gateway SDK build location unknown for target #{inspect(other_target)}.
           You can pass the URL as AGORA_SDK_URL environmental variable.
           """)
+          ""
         end
+    end
 
+    {_output, result} = System.shell("./install.sh #{url}")
+    if result != 0 do
+      IO.warn("""
+      Couldn't fetch SDK from the following URL: #{url}
+      """)
     end
 
     [
