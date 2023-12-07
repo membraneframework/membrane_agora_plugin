@@ -14,7 +14,7 @@ defmodule Membrane.Agora.BundlexProject do
 
   def project do
     url = case get_target() do
-      %{os: "linux", architecture: :x86_64} ->
+      %{os: "linux", architecture: "x86_64"} ->
         "https://download.agora.io/sdk/release/Agora-RTC-x86_64-linux-gnu-v3.8.202.20-20220627_152601-214165.tgz"
 
       other_target ->
