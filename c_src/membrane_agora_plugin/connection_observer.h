@@ -3,6 +3,9 @@
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
+#include <optional>
+
+#include <unifex/unifex.h>
 
 #include "NGIAgoraLocalUser.h"
 #include "NGIAgoraRtcConnection.h"
@@ -15,7 +18,13 @@ using namespace agora::rtc;
 class ConnectionObserver : public IRtcConnectionObserver {
 public:
   ConnectionObserver(agora_refptr<IRtcConnection> connection)
-      : _is_connected(false), _connection(connection) {}
+      : _is_connected(false), _connection(connection),
+        _destination(std::nullopt) {}
+
+  ConnectionObserver(agora_refptr<IRtcConnection> connection,
+                     UnifexPid destination)
+      : _is_connected(false), _connection(connection),
+        _destination(destination) {}
 
   void waitUntilConnected();
 
@@ -60,4 +69,5 @@ private:
   std::condition_variable _cv;
   std::mutex _lock;
   agora_refptr<IRtcConnection> _connection;
+  std::optional<UnifexPid> _destination;
 };

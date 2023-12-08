@@ -72,12 +72,16 @@ defmodule Membrane.Agora.IntegrationTest do
     end
   end
 
-  test "if the data is sent to Agora works properly" do
+  test "if the data is sent to Agora properly" do
     {:ok, _supervisor, sink_pipeline} = Membrane.Pipeline.start_link(PipelineWithAgoraSink)
 
     {:ok, _supervisor, source_pipeline} =
       Membrane.Testing.Pipeline.start_link(module: PipelineWithAgoraSource)
 
-    assert_start_of_stream(source_pipeline, :video_sink, :input, 100_000)
+    assert_start_of_stream(source_pipeline, :video_sink, :input, 10_000)
+    Process.sleep(5_000)
+    Membrane.Pipeline.terminate(sink_pipeline)
+    assert_end_of_stream(source_pipeline, :video_sink, :input, 10_000)
+    Membrane.Pipeline.terminate(source_pipeline)
   end
 end

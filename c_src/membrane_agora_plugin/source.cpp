@@ -35,7 +35,8 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   ccfg.enableAudioRecordingOrPlayout = true;
   state->connection = state->service->createRtcConnection(ccfg);
 
-  state->connObserver = std::make_shared<ConnectionObserver>(state->connection);
+  state->connObserver =
+      std::make_shared<ConnectionObserver>(state->connection, destination);
   state->connection->registerObserver(state->connObserver.get());
   // connecting
   int connection_res = state->connection->connect(token, channelId, userId);
