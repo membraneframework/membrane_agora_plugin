@@ -1,3 +1,4 @@
+#include "./_generated/source.h"
 #include "connection_observer.h"
 
 void ConnectionObserver::waitUntilConnected() {
@@ -73,12 +74,22 @@ void ConnectionObserver::onUserJoined(user_id_t userId) {
   options.type = rtc::VIDEO_STREAM_TYPE::VIDEO_STREAM_LOW;
   _connection->getLocalUser()->subscribeVideo(userId, options);
   _connection->getLocalUser()->subscribeAudio(userId);
+
+  if (_destination.has_value()) {
+    UnifexEnv *env = unifex_alloc_env(NULL);
+    send_user_joined(env, _destination.value(), UNIFEX_SEND_THREADED, userId);
+    unifex_free_env(env);
+  }
 }
 
 void ConnectionObserver::onUserLeft(user_id_t userId,
                                     rtc::USER_OFFLINE_REASON_TYPE reason) {
-  UNUSED(userId);
   UNUSED(reason);
+  if (_destination.has_value()) {
+    UnifexEnv *env = unifex_alloc_env(NULL);
+    send_user_left(env, _destination.value(), UNIFEX_SEND_THREADED, userId);
+    unifex_free_env(env);
+  }
 }
 
 void ConnectionObserver::onTransportStats(const rtc::RtcStats &stats) {

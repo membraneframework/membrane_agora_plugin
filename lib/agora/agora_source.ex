@@ -51,7 +51,8 @@ defmodule Membrane.Agora.Source do
       token: opts.token,
       channel_name: opts.channel_name,
       user_id: opts.user_id,
-      native_state: nil
+      native_state: nil,
+      peers_ids: MapSet.new()
     }
 
     {[], state}
@@ -83,11 +84,29 @@ defmodule Membrane.Agora.Source do
 
   @impl true
   def handle_info({:agora_video_payload, payload, id}, _ctx, state) do
-    {[buffer: {:video, %Buffer{payload: payload, metadata: %{id: id}}}], state}
+    {[buffer: {:video, %Buffer{payload: payload, metadata: %{id: inspect(id)}}}], state}
   end
 
   @impl true
   def handle_info({:agora_audio_payload, payload, id_str}, _ctx, state) do
-    {[buffer: {:audio, %Buffer{payload: payload, metadata: %{id: inspect(id_str)}}}], state}
+    {[buffer: {:audio, %Buffer{payload: payload, metadata: %{id: id_str}}}], state}
+  end
+
+  @impl true
+  def handle_info({:user_joined, id_str}, _ctx, state) do
+    peers_ids = MapSet.put(state.peers_ids, id_str)
+    {[], %{state | peers_ids: peers_ids}}
+  end
+
+  @impl true
+  def handle_info({:user_left, id_str}, _ctx, state) do
+    peers_ids = MapSet.delete(state.peers_ids, id_str)
+    state = %{state | peers_ids: peers_ids}
+
+    if MapSet.size(peers_ids) == 0 do
+      {[end_of_stream: :video, end_of_stream: :audio], state}
+    else
+      {[], state}
+    end
   end
 end
