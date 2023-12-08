@@ -33,7 +33,7 @@ defmodule Membrane.Agora.BundlexProject do
     {_output, result} = System.shell("./install.sh #{url}")
     if result != 0 do
       IO.warn("""
-      Couldn't fetch SDK from the following URL: #{url}
+      Couldn't get SDK with the following URL: #{url}
       """)
     end
 
