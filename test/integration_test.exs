@@ -3,6 +3,37 @@ defmodule Membrane.Agora.IntegrationTest do
 
   import Membrane.Testing.Assertions
 
+  defmodule FramerateAsserter do
+    use Membrane.Filter
+
+    @tolerance Membrane.Time.milliseconds(100)
+
+    def_input_pad :input, accepted_format: _any, flow_control: :auto
+    def_output_pad :output, accepted_format: _any, flow_control: :auto
+
+    def_options framerate: []
+
+    @impl true
+    def handle_init(_ctx, opts) do
+      {num, den} = opts.framerate
+      interval = Membrane.Time.seconds(Ratio.new(den, num))
+      {[], %{interval: interval, last_timestamp: nil, how_many_frames: 0}}
+    end
+
+    @impl true
+    def handle_buffer(:input, buffer, _ctx, state) do
+      if state.last_timestamp do
+        diff = buffer.dts - state.last_timestamp
+        assert abs(diff - state.interval) < @tolerance
+
+        assert abs(state.interval * state.how_many_frames - buffer.dts) < 5 * @tolerance
+      end
+
+      {[buffer: {:output, buffer}],
+       %{state | last_timestamp: buffer.dts, how_many_frames: state.how_many_frames + 1}}
+    end
+  end
+
   defmodule ReceiverPipeline do
     use Membrane.Pipeline
 
@@ -21,6 +52,7 @@ defmodule Membrane.Agora.IntegrationTest do
           user_id: @user_id
         })
         |> via_out(:video)
+        |> child(%FramerateAsserter{framerate: opts[:framerate]})
         |> child(:video_sink, %Membrane.File.Sink{location: opts[:video]}),
         get_child(:source)
         |> via_out(:audio)
@@ -45,7 +77,7 @@ defmodule Membrane.Agora.IntegrationTest do
         [
           child(%Membrane.File.Source{location: opts[:video]})
           |> child(%Membrane.H264.Parser{
-            generate_best_effort_timestamps: %{framerate: {12, 1}}
+            generate_best_effort_timestamps: %{framerate: opts[:framerate]}
           })
           |> child(Membrane.Realtimer)
           |> via_in(:video)
@@ -70,6 +102,7 @@ defmodule Membrane.Agora.IntegrationTest do
   test "if the data is sent to Agora properly", %{tmp_dir: dir} do
     require Membrane.Pad, as: Pad
 
+    framerate = {12, 1}
     input_video = "test/fixtures/in_video.h264"
     output_video = "#{dir}/video.h264"
     reference_video = input_video
@@ -81,13 +114,13 @@ defmodule Membrane.Agora.IntegrationTest do
     {:ok, _supervisor, sender_pipeline} =
       Membrane.Testing.Pipeline.start_link(
         module: SenderPipeline,
-        custom_args: [audio: input_audio, video: input_video]
+        custom_args: [audio: input_audio, video: input_video, framerate: framerate]
       )
 
     {:ok, _supervisor, receiver_pipelineline} =
       Membrane.Testing.Pipeline.start_link(
         module: ReceiverPipeline,
-        custom_args: [audio: output_audio, video: output_video]
+        custom_args: [audio: output_audio, video: output_video, framerate: framerate]
       )
 
     assert_start_of_stream(receiver_pipelineline, :video_sink, :input, 10_000)

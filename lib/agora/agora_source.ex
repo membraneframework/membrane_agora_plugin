@@ -52,7 +52,9 @@ defmodule Membrane.Agora.Source do
       channel_name: opts.channel_name,
       user_id: opts.user_id,
       native_state: nil,
-      peers_ids: MapSet.new()
+      peers_ids: MapSet.new(),
+      first_video_timestamp: nil,
+      first_audio_timestamp: nil
     }
 
     {[], state}
@@ -84,12 +86,29 @@ defmodule Membrane.Agora.Source do
 
   @impl true
   def handle_info({:agora_video_payload, payload, id}, _ctx, state) do
-    {[buffer: {:video, %Buffer{payload: payload, metadata: %{id: inspect(id)}}}], state}
+    {dts, state} =
+      if state.first_video_timestamp do
+        {Membrane.Time.os_time() - state.first_video_timestamp, state}
+      else
+        {0, %{state | first_video_timestamp: Membrane.Time.os_time()}}
+      end
+
+    {[buffer: {:video, %Buffer{payload: payload, metadata: %{id: inspect(id)}, dts: dts}}], state}
   end
 
   @impl true
   def handle_info({:agora_audio_payload, payload, id_str}, _ctx, state) do
-    {[buffer: {:audio, %Buffer{payload: payload, metadata: %{id: id_str}}}], state}
+    {dts, state} =
+      if state.first_audio_timestamp do
+        {Membrane.Time.os_time() - state.first_audio_timestamp, state}
+      else
+        {0, %{state | first_audio_timestamp: Membrane.Time.os_time()}}
+      end
+
+    pts = dts
+
+    {[buffer: {:audio, %Buffer{payload: payload, metadata: %{id: id_str}, pts: pts, dts: dts}}],
+     state}
   end
 
   @impl true
