@@ -36,4 +36,7 @@ spec(
     {:ok :: label, state}
 )
 
+sends {:user_joined :: label, id :: string}
+sends {:user_left :: label, id :: string}
+
 dirty :cpu, create: 4
