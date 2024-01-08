@@ -1,7 +1,7 @@
 defmodule Membrane.Agora.Mixfile do
   use Mix.Project
 
-  @version "0.1.1"
+  @version "0.1.2"
   @github_url "https://github.com/membraneframework/membrane_agora_plugin"
 
   def project do
