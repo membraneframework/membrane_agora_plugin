@@ -41,7 +41,12 @@ defmodule Membrane.Agora.Mixfile do
       {:membrane_core, "~> 1.0"},
       {:membrane_h264_format, "~> 0.6.1"},
       {:membrane_aac_format, "~> 0.8.0"},
+      {:membrane_raw_audio_format, "~> 0.12.0"},
       {:unifex, "~> 1.1.0"},
+      {:membrane_file_plugin, "~> 0.16.0", only: :test},
+      {:membrane_h264_plugin, "~> 0.9.0", only: :test},
+      {:membrane_aac_plugin, "~> 0.18.1", only: :test},
+      {:membrane_realtimer_plugin, "~> 0.9.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}
