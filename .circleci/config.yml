@@ -12,7 +12,7 @@ jobs:
             mix deps.compile
             export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./agora_sdk
             mix compile --force --warnings-as-errors
-	    mix test
+            mix test
 
 workflows:
   build:
