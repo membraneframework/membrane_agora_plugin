@@ -24,4 +24,14 @@ public:
   bool onPlaybackAudioFrameBeforeMixing(const char *channelId,
                                         media::base::user_id_t uid,
                                         AudioFrame &audioFrame) override;
+
+  int getObservedAudioFramePosition() override {return 0;};
+
+  AudioParams getPlaybackAudioParams() override {return  AudioParams();};
+
+  AudioParams getRecordAudioParams()  override {return  AudioParams();};
+
+  AudioParams getMixedAudioParams() override {return  AudioParams();};
+
+  AudioParams getEarMonitoringAudioParams() override {return AudioParams();};
 };
