@@ -3,7 +3,7 @@
 #include <unifex/payload.h>
 #include <unifex/unifex.h>
 
-bool SampleVideoEncodedFrameObserver::OnEncodedVideoFrame(
+bool SampleVideoEncodedFrameObserver::onEncodedVideoFrameReceived(
     uid_t uid, const uint8_t *imageBuffer, size_t length,
     const EncodedVideoFrameInfo &videoEncodedFrameInfo) {
   UnifexEnv *env = unifex_alloc_env(NULL);

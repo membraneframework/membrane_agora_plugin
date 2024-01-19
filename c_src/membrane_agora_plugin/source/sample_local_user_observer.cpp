@@ -2,9 +2,6 @@
 
 void SampleLocalUserObserver::onAudioTrackPublishSuccess(
     agora_refptr<ILocalAudioTrack> audioTrack) {}
-void SampleLocalUserObserver::onLocalAudioTrackStateChanged(
-    agora_refptr<ILocalAudioTrack> audioTrack, LOCAL_AUDIO_STREAM_STATE state,
-    LOCAL_AUDIO_STREAM_ERROR errorCode) {}
 void SampleLocalUserObserver::onLocalAudioTrackStatistics(
     const LocalAudioStats &stats) {}
 void SampleLocalUserObserver::onRemoteAudioTrackStatistics(
@@ -69,3 +66,8 @@ void SampleLocalUserObserver::onFirstRemoteVideoFrame(user_id_t userId,
 void SampleLocalUserObserver::onUserVideoTrackSubscribed(
     user_id_t userId, VideoTrackInfo trackInfo,
     agora_refptr<IRemoteVideoTrack> videoTrack) {}
+
+void SampleLocalUserObserver::onVideoTrackUnpublished(agora_refptr<ILocalVideoTrack> videoTrack) {}
+void SampleLocalUserObserver::onVideoTrackPublishStart(agora_refptr<ILocalVideoTrack> videoTrack) {}
+void SampleLocalUserObserver::onAudioTrackUnpublished(agora_refptr<ILocalAudioTrack> audioTrack) {}
+void SampleLocalUserObserver::onAudioTrackPublishStart(agora_refptr<ILocalAudioTrack> audioTrack) {}
