@@ -42,5 +42,10 @@ defmodule Membrane.Agora.BundlexProject do
 
   defp natives(platform) do
     IO.warn("Agora's Server Gateway SDK is unavailable for this target: #{inspect(platform)}")
+
+    [
+      sink: [sources: ["noop.cpp"], interface: [:nif], language: :cpp],
+      source: [sources: ["noop.cpp"], interface: [:nif], language: :cpp]
+    ]
   end
 end
