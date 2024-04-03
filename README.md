@@ -10,7 +10,7 @@ Currently only `Membrane.Agora.Sink` is available.
 
 ## Installation
 The Agora's Gateway server SDK is available only for Ubuntu (14.04 or higher) and
-CentOS (6.6 or higher) operating systems, and so is membrane_agora_plugin. 
+CentOS (6.6 or higher) operating systems, and so is membrane_agora_plugin.
 The required CPU architecture is arm64 or x86-64.
 
 You can use the `membraneframeworklabs/docker_membrane` docker image (in version `v2.2.0-rc2` or higher) as a running environment:
@@ -20,7 +20,7 @@ docker run -it membraneframeworklabs/docker_membrane
 
 To use that plugin in your project, add the following line to your deps in `mix.exs`:
 ```
-	{:membrane_agora_plugin, "~> 0.2.1"}
+	{:membrane_agora_plugin, "~> 0.2.2"}
 ```
 
 Run `mix deps.get`.
@@ -50,6 +50,10 @@ elixir example.exs
 ```
 and observe the web demo application.
 Once the pipeline is started, audio and video should start playing.
+
+## Provide your own SDK
+
+By default, the plugin will attempt to download the correct SDK for your system. However, if you want to bundle the SDK code yourself, you can provide the environment variable `AGORA_SDK_PRESENT` set to "true". This flag will prevent the bundlex config from pulling the SDK during build time. However, it is up to you to set the correct paths to the SDK for build and compile time using the correct flags for your C compiler.
 
 
 ## Copyright and License
