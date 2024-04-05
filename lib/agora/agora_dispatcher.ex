@@ -46,7 +46,7 @@ defmodule Membrane.Agora.Dispatcher do
         {[buffer: {Pad.ref(:output, user_id), buffer}], state}
 
       true ->
-        state = buffer_up(buffer, state)
+        state = buffer_up(state, buffer)
         {[], state}
     end
   end
