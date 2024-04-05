@@ -38,8 +38,9 @@ defmodule Membrane.Agora.Dispatcher do
 
     cond do
       user_id not in Map.keys(state.output_pads) ->
-        state = add_pad(state, user_id) |> buffer_up(buffer)
-        {[notify_parent: {:add_pad, user_id}], state}
+        {actions, state} = add_pad(state, user_id)
+        state = buffer_up(state, buffer)
+        {actions, state}
 
       state.output_pads[user_id].is_connected ->
         {[buffer: {Pad.ref(:output, user_id), buffer}], state}
