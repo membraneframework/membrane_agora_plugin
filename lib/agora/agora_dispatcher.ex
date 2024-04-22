@@ -1,5 +1,17 @@
 defmodule Membrane.Agora.Dispatcher do
-  @moduledoc false
+  @moduledoc """
+  This element allows for dispatching the streams received by the `Membrane.Agora.Source`
+  based on the `user_id` field from the buffer's metadata.
+  The `Membrane.Agora.Source` sends a single stream for all the users that are present in the
+  Agora channel and enriches buffers with the `user_id` field which corresponds
+  to the ID of the stream sender from the Agora channel. The `#{inspect(__MODULE__)}` element allows
+  to demultiplex such a single output channel stream into multiple streams for each of the users.
+
+  Usage:
+  * attach the `#{inspect(__MODULE__)}` element to each output pad of the `Membrane.Agora.Source`.
+  * when the `{:add_pad, <user_id>}` message is received from a given `#{inspect(__MODULE__)}` dispatcher,
+  attach the output pad with the following name: `{:output, <user_id>}` to this particular dispatcher
+  """
 
   use Membrane.Filter
 
@@ -7,13 +19,11 @@ defmodule Membrane.Agora.Dispatcher do
   require Membrane.Logger
 
   def_input_pad(:input,
-    flow_control: :auto,
-    accepted_format: _any
+    accepted_format: [%Membrane.H264{alignment: :au}, Membrane.AAC]
   )
 
   def_output_pad(:output,
-    flow_control: :auto,
-    accepted_format: _any,
+    accepted_format: [%Membrane.H264{alignment: :au}, Membrane.AAC],
     availability: :on_request
   )
 
@@ -38,9 +48,9 @@ defmodule Membrane.Agora.Dispatcher do
 
     cond do
       user_id not in Map.keys(state.output_pads) ->
-        {actions, state} = add_pad(state, user_id)
+        state = add_pad(state, user_id)
         state = buffer_up(state, buffer)
-        {actions, state}
+        {[notify_parent: {:add_pad, user_id}], state}
 
       state.output_pads[user_id].is_connected ->
         {[buffer: {Pad.ref(:output, user_id), buffer}], state}
@@ -57,7 +67,7 @@ defmodule Membrane.Agora.Dispatcher do
       if user_id in Map.keys(state.output_pads) do
         {[], state}
       else
-        add_pad(state, user_id)
+        {[], add_pad(state, user_id)}
       end
 
     state =
@@ -73,8 +83,7 @@ defmodule Membrane.Agora.Dispatcher do
   end
 
   defp add_pad(state, user_id) do
-    {[notify_parent: {:add_pad, user_id}],
-     put_in(state, [:output_pads, user_id], %{buffered: [], is_connected: false})}
+    put_in(state, [:output_pads, user_id], %{buffered: [], is_connected: false})
   end
 
   defp buffer_up(%{queue_before_pad_connected?: true} = state, _buffer) do
