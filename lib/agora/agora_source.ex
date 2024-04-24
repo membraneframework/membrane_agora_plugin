@@ -113,12 +113,16 @@ defmodule Membrane.Agora.Source do
 
   @impl true
   def handle_info({:user_joined, id_str}, _ctx, state) do
+    IO.inspect({id_str, state}, label: :user_joined)
+
     peers_ids = MapSet.put(state.peers_ids, id_str)
     {[], %{state | peers_ids: peers_ids}}
   end
 
   @impl true
   def handle_info({:user_left, id_str}, _ctx, state) do
+    IO.inspect({id_str, state}, label: :user_left)
+
     peers_ids = MapSet.delete(state.peers_ids, id_str)
     state = %{state | peers_ids: peers_ids}
 
