@@ -19,17 +19,19 @@ defmodule Membrane.Agora.Dispatcher do
   require Membrane.Logger
 
   def_input_pad(:input,
-    accepted_format: [
-      %Membrane.H264{alignment: :au},
-      %Membrane.RawAudio{sample_rate: 44_100, channels: 2, sample_format: :s16le}
-    ]
+    accepted_format:
+      any_of(
+        %Membrane.H264{alignment: :au},
+        %Membrane.RawAudio{sample_rate: 44_100, channels: 2, sample_format: :s16le}
+      )
   )
 
   def_output_pad(:output,
-    accepted_format: [
-      %Membrane.H264{alignment: :au},
-      %Membrane.RawAudio{sample_rate: 44_100, channels: 2, sample_format: :s16le}
-    ],
+    accepted_format:
+      any_of(
+        %Membrane.H264{alignment: :au},
+        %Membrane.RawAudio{sample_rate: 44_100, channels: 2, sample_format: :s16le}
+      ),
     availability: :on_request
   )
 
