@@ -16,3 +16,5 @@ sends {:agora_audio_payload :: label, payload, id :: string}
 sends {:agora_video_payload :: label, payload, id :: int}
 sends {:user_joined :: label, id :: string}
 sends {:user_left :: label, id :: string}
+
+dirty :cpu, [:create]
