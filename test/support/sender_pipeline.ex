@@ -1,9 +1,10 @@
 defmodule Membrane.Agora.Support.SenderPipeline do
   use Membrane.Pipeline
+  alias Membrane.Agora.TokenGenerator
 
   @channel_name System.get_env("AGORA_CHANNEL_NAME", "")
-  @token System.get_env("AGORA_TOKEN", "")
   @app_id System.get_env("AGORA_APP_ID", "")
+  @certificate System.get_env("AGORA_CERTIFICATE", "")
   @user_id System.get_env("AGORA_USER_ID", "0")
 
   @impl true
@@ -18,7 +19,7 @@ defmodule Membrane.Agora.Support.SenderPipeline do
         |> via_in(:video)
         |> child(:sink, %Membrane.Agora.Sink{
           channel_name: @channel_name,
-          token: @token,
+          token: TokenGenerator.generate_token(@channel_name, @app_id, @certificate, @user_id),
           app_id: @app_id,
           user_id: @user_id
         }),
