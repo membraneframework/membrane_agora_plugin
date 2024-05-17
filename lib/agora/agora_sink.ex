@@ -67,20 +67,20 @@ defmodule Membrane.Agora.Sink do
         Native.create(state.app_id, state.token, state.channel_name, state.user_id)
       rescue
         _e in UndefinedFunctionError ->
-          raise """
+          reraise("""
           Couldn't setup NIF. Perhaps you have forgotten to set LD_LIBRARY_PATH:
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#{Path.expand("#{__ENV__.file}/../../../agora_sdk")}
-          """
+          """)
 
         other_error ->
-          raise other_error
+          reraise(other_error)
       end
 
     {[], %{state | native_state: native_state}}
   end
 
   @impl true
-  def handle_stream_format(Pad.ref(:video, _), stream_format, _ctx, state) do
+  def handle_stream_format(Pad.ref(:video, _id), stream_format, _ctx, state) do
     {:ok, native_state} =
       Native.update_video_stream_format(
         stream_format.height,
@@ -93,7 +93,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_stream_format(Pad.ref(:audio, _), stream_format, _ctx, state) do
+  def handle_stream_format(Pad.ref(:audio, _id), stream_format, _ctx, state) do
     {:ok, native_state} =
       Native.update_audio_stream_format(
         stream_format.sample_rate,
@@ -106,7 +106,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_buffer(Pad.ref(:video, _), buffer, _ctx, state) do
+  def handle_buffer(Pad.ref(:video, _id), buffer, _ctx, state) do
     :ok =
       Native.write_video_data(
         buffer.payload,
@@ -118,7 +118,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_buffer(Pad.ref(:audio, _), buffer, _ctx, state) do
+  def handle_buffer(Pad.ref(:audio, _id), buffer, _ctx, state) do
     :ok = Native.write_audio_data(buffer.payload, state.native_state)
     {[], state}
   end

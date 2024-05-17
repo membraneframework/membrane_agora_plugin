@@ -1,4 +1,6 @@
 defmodule Membrane.Agora.Support.SenderPipeline do
+  @moduledoc false
+
   use Membrane.Pipeline
   alias Membrane.Agora.TokenGenerator
 

@@ -1,5 +1,6 @@
 defmodule Membrane.Agora.TokenGenerator do
   @moduledoc false
+  @spec get_token(String.t(), String.t(), String.t(), String.t()) :: binary()
   def get_token(certificate, app_id, channel, user_id) do
     version = "006"
     salt = :rand.uniform(99_999_999)

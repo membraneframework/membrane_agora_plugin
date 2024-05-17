@@ -67,13 +67,13 @@ defmodule Membrane.Agora.Source do
         Native.create(state.app_id, state.token, state.channel_name, state.user_id, self())
       rescue
         _e in UndefinedFunctionError ->
-          raise """
+          reraise("""
           Couldn't setup NIF. Perhaps you have forgotten to set LD_LIBRARY_PATH:
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#{Path.expand("#{__ENV__.file}/../../../agora_sdk")}
-          """
+          """)
 
         other_error ->
-          raise other_error
+          reraise(other_error)
       end
 
     {[

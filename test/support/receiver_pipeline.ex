@@ -1,8 +1,11 @@
 defmodule Membrane.Agora.Support.ReceiverPipeline do
-  alias Membrane.Agora.TokenGenerator
+  @moduledoc false
+
   use Membrane.Pipeline
+  alias Membrane.Agora.TokenGenerator
 
   defmodule FramerateAsserter do
+    @moduledoc false
     use Membrane.Filter
 
     @tolerance Membrane.Time.milliseconds(100)

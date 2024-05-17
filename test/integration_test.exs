@@ -1,9 +1,7 @@
 defmodule Membrane.Agora.IntegrationTest do
   use ExUnit.Case
-
-  alias Membrane.Agora.Support.{SenderPipeline, ReceiverPipeline}
-
   import Membrane.Testing.Assertions
+  alias Membrane.Agora.Support.{ReceiverPipeline, SenderPipeline}
 
   @tag :tmp_dir
   test "if the data is sent to Agora properly", %{tmp_dir: dir} do
@@ -55,7 +53,7 @@ defmodule Membrane.Agora.IntegrationTest do
   end
 
   defp get_h264_frames(path) do
-    alias Membrane.H264.Parser.{NALuSplitter, NALuParser, AUSplitter}
+    alias Membrane.H264.Parser.{AUSplitter, NALuParser, NALuSplitter}
     bytestream = File.read!(path)
 
     nalu_splitter = NALuSplitter.new()
