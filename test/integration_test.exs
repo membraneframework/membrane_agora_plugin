@@ -16,30 +16,30 @@ defmodule Membrane.Agora.IntegrationTest do
     output_audio = "#{dir}/audio.pcm"
     reference_audio = "test/fixtures/in_audio.pcm"
 
+    {:ok, _supervisor, receiver_pipeline} =
+      Membrane.Testing.Pipeline.start_link(
+        module: ReceiverPipeline,
+        custom_args: [audio: output_audio, video: output_video, framerate: framerate]
+      )
+
     {:ok, _supervisor, sender_pipeline} =
       Membrane.Testing.Pipeline.start_link(
         module: SenderPipeline,
         custom_args: [audio: input_audio, video: input_video, framerate: framerate]
       )
 
-    {:ok, _supervisor, receiver_pipelineline} =
-      Membrane.Testing.Pipeline.start_link(
-        module: ReceiverPipeline,
-        custom_args: [audio: output_audio, video: output_video, framerate: framerate]
-      )
-
-    assert_start_of_stream(receiver_pipelineline, :video_sink, :input, 10_000)
-    assert_start_of_stream(receiver_pipelineline, :audio_sink)
+    assert_start_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
+    assert_start_of_stream(receiver_pipeline, :audio_sink)
 
     assert_end_of_stream(sender_pipeline, :sink, Pad.ref(:video, _), 30_000)
     assert_end_of_stream(sender_pipeline, :sink, Pad.ref(:audio, _), 30_000)
 
     Membrane.Pipeline.terminate(sender_pipeline)
 
-    assert_end_of_stream(receiver_pipelineline, :video_sink, :input, 10_000)
-    assert_end_of_stream(receiver_pipelineline, :audio_sink)
+    assert_end_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
+    assert_end_of_stream(receiver_pipeline, :audio_sink)
 
-    Membrane.Pipeline.terminate(receiver_pipelineline)
+    Membrane.Pipeline.terminate(receiver_pipeline)
 
     assert abs(
              (get_h264_frames(reference_video)
