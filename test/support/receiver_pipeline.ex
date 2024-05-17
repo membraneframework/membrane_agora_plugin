@@ -27,7 +27,7 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
       if state.last_timestamp do
         diff = buffer.dts - state.last_timestamp
 
-        if abs(diff - state.interval) < @tolerance,
+        unless abs(diff - state.interval) < @tolerance,
           do:
             raise("""
             Framerate assertion failed.
@@ -35,7 +35,7 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
             Tolerance: #{@tolerance}
             """)
 
-        if abs(state.interval * state.how_many_frames - buffer.dts) < 5 * @tolerance,
+        unless abs(state.interval * state.how_many_frames - buffer.dts) < 5 * @tolerance,
           do:
             raise("""
             Framerate assertion failed.
