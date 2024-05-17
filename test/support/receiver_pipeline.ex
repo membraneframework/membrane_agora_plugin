@@ -56,7 +56,7 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
     spec = [
       child(:source, %Membrane.Agora.Source{
         channel_name: @channel_name,
-        token: TokenGenerator.generate_token(@channel_name, @app_id, @certificate, @user_id),
+        token: TokenGenerator.get_token(@channel_name, @app_id, @certificate, @user_id),
         app_id: @app_id,
         user_id: @user_id
       })
