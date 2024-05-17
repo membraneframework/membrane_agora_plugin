@@ -22,7 +22,7 @@ defmodule Membrane.Agora.Support.SenderPipeline do
         |> via_in(:video)
         |> child(:sink, %Membrane.Agora.Sink{
           channel_name: @channel_name,
-          token: TokenGenerator.get_token(@channel_name, @app_id, @certificate, user_id),
+          token: TokenGenerator.get_token(@certificate, @app_id, @channel_name, user_id),
           app_id: @app_id,
           user_id: user_id
         }),
