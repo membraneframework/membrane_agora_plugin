@@ -16,6 +16,7 @@ workflows:
       - elixir/lint:
           filters:
             <<: *filters
+          docs: false
       - elixir/hex_publish:
           requires:
             - elixir/build_test
