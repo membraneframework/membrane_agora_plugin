@@ -52,16 +52,17 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
   @channel_name System.get_env("AGORA_CHANNEL_NAME", "")
   @app_id System.get_env("AGORA_APP_ID", "")
   @certificate System.get_env("AGORA_CERTIFICATE", "")
-  @user_id System.get_env("AGORA_USER_ID", "0")
 
   @impl true
   def handle_init(_ctx, opts) do
+    user_id = 21
+
     spec = [
       child(:source, %Membrane.Agora.Source{
         channel_name: @channel_name,
-        token: TokenGenerator.get_token(@channel_name, @app_id, @certificate, @user_id),
+        token: TokenGenerator.get_token(@channel_name, @app_id, @certificate, user_id),
         app_id: @app_id,
-        user_id: @user_id
+        user_id: user_id
       })
       |> via_out(:video)
       |> child(%FramerateAsserter{framerate: opts[:framerate]})
