@@ -10,7 +10,7 @@ defmodule Membrane.Agora.Support.SenderPipeline do
 
   @impl true
   def handle_init(_ctx, opts) do
-    user_id = 12
+    user_id = "12"
 
     spec =
       [

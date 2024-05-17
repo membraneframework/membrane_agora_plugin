@@ -55,7 +55,7 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
 
   @impl true
   def handle_init(_ctx, opts) do
-    user_id = 21
+    user_id = "21"
 
     spec = [
       child(:source, %Membrane.Agora.Source{
