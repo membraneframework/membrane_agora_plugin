@@ -11,6 +11,8 @@ defmodule Membrane.Agora.BundlexProject do
     unless System.get_env("AGORA_SDK_PRESENT") == "true", do: System.shell("./install.sh")
 
     System.shell("ls -la agora_sdk") |> IO.inspect(label: :AGORA_PATH)
+    System.shell("echo $LD_LIBRARY_PATH") |> IO.inspect(label: :LD_LIBRARY_PATH)
+
     [
       sink: [
         sources: ["sink.cpp", "connection_observer.cpp"],
