@@ -15,7 +15,7 @@ defmodule Membrane.Agora.BundlexProject do
         sources: ["sink.cpp", "connection_observer.cpp"],
         includes: ["agora_sdk/include/"],
         libs: ["agora_rtc_sdk", "agora-ffmpeg"],
-        lib_dirs: ["agora_sdk/"],
+        lib_dirs: [Path.join(__DIR__, "agora_sdk/")],
         deps: [unifex: :unifex],
         interface: [:nif],
         preprocessor: Unifex,

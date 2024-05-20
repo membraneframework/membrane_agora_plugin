@@ -67,8 +67,6 @@ defmodule Membrane.Agora.Sink do
         Native.create(state.app_id, state.token, state.channel_name, state.user_id)
       rescue
         _e in UndefinedFunctionError ->
-          IO.inspect(System.get_env("LD_LIBRARY_PATH"), label: :SINK)
-
           reraise(
             """
             Couldn't setup NIF. Perhaps you have forgotten to set LD_LIBRARY_PATH:
