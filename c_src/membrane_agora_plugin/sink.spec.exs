@@ -39,4 +39,4 @@ spec(
 sends {:user_joined :: label, id :: string}
 sends {:user_left :: label, id :: string}
 
-dirty :cpu, create: 4
+dirty :cpu, [:create, :write_video_data, :update_video_stream_format, :write_audio_data, :update_audio_stream_format]

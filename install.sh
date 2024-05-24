@@ -1,5 +1,4 @@
 #! /bin/bash
-
 if ! test -d ./agora_sdk; then
     wget https://download.agora.io/sdk/release/Agora-RTC-x86_64-linux-gnu-v3.8.202.20-20220627_152601-214165.tgz
     tar xvf Agora-RTC-x86_64-linux-gnu-v3.8.202.20-20220627_152601-214165.tgz
