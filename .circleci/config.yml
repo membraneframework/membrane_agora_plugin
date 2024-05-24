@@ -7,14 +7,22 @@ workflows:
   build:
     jobs:
       - elixir/build_test:
-          filters: &filters
-            tags:
-              only: /v.*/
-      - elixir/build_test:
+          # post-steps: # steps to run after steps defined in the job bar
+          #     - elixir/use_build_cache:
+          #         cache-version: 3
+          #         env: test
+          #         regenerate: true
+          #         before-save:
+          #           - run: mix compile --force --warnings-as-errors
           filters: &filters
             tags:
               only: /v.*/
       - elixir/test:
+          pre-steps: # steps to run before steps defined in the job bar
+            - checkout
+            - elixir/get_mix_deps
+            - run:
+                command: mix compile --force
           filters:
             <<: *filters
       - elixir/lint:
