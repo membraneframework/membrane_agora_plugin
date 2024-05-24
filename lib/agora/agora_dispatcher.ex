@@ -56,7 +56,7 @@ defmodule Membrane.Agora.Dispatcher do
   end
 
   @impl true
-  def handle_stream_format(format, _ctx, state) do
+  def handle_stream_format(:input, format, _ctx, state) do
     {[forward: format], %{state | stream_format: format}}
   end
 
