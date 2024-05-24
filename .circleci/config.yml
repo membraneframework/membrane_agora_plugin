@@ -16,10 +16,6 @@ workflows:
           filters: &filters
             tags:
               only: /v.*/
-      - elixir/build_test:
-          filters: &filters
-            tags:
-              only: /v.*/
       - elixir/test:
           requires:
             - build_test2
@@ -31,7 +27,7 @@ workflows:
           docs: false
       - elixir/hex_publish:
           requires:
-            - elixir/build_test
+            - build_test2
             - elixir/test
             - elixir/lint
           context:
