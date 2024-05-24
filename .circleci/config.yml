@@ -19,8 +19,9 @@ workflows:
               only: /v.*/
       - elixir/test:
           pre-steps: # steps to run before steps defined in the job bar
+            - checkout
             - run:
-                command: cd ~/project && mix compile --force
+                command: mix compile --force
           requires: 
             - elixir/build_test
           filters:
