@@ -7,6 +7,12 @@ workflows:
   build:
     jobs:
       - elixir/build_test:
+          name: build_test1
+          filters: &filters
+            tags:
+              only: /v.*/
+      - elixir/build_test:
+          name: build_test2
           filters: &filters
             tags:
               only: /v.*/
@@ -15,6 +21,8 @@ workflows:
             tags:
               only: /v.*/
       - elixir/test:
+          requires:
+            - build_test2
           filters:
             <<: *filters
       - elixir/lint:
