@@ -47,7 +47,17 @@ defmodule Membrane.Agora.Dispatcher do
 
   @impl true
   def handle_init(_ctx, opts) do
-    {[], %{output_pads: %{}, queue_before_pad_connected?: opts.queue_before_pad_connected?}}
+    {[],
+     %{
+       output_pads: %{},
+       queue_before_pad_connected?: opts.queue_before_pad_connected?,
+       stream_format: nil
+     }}
+  end
+
+  @impl true
+  def handle_stream_format(format, _ctx, state) do
+    {[forward: format], %{state | stream_format: format}}
   end
 
   @impl true
@@ -83,11 +93,16 @@ defmodule Membrane.Agora.Dispatcher do
         true
       end)
 
+    stream_format_actions =
+      if state.stream_format,
+        do: [stream_format: {Pad.ref(:output, user_id), state.stream_format}],
+        else: []
+
     buffer_actions =
       Enum.reverse(state.output_pads[user_id].buffered)
       |> Enum.map(&{Pad.ref(:output, user_id), &1})
 
-    {notify_child_actions ++ buffer_actions, state}
+    {notify_child_actions ++ stream_format_actions ++ buffer_actions, state}
   end
 
   defp add_pad(state, user_id) do

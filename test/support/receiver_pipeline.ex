@@ -76,9 +76,9 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
   end
 
   @impl true
-  def handle_child_notification({:add_pad, user_id}, :video_dispatcher, _ctx, state) do
+  def handle_child_notification({:add_pad, user_id}, :dispatcher_video, _ctx, state) do
     spec =
-      get_child(:video_dispatcher)
+      get_child(:dispatcher_video)
       |> via_out(Pad.ref(:output, user_id))
       |> child(:video_sink, %Membrane.File.Sink{location: state.video})
 
@@ -86,9 +86,9 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
   end
 
   @impl true
-  def handle_child_notification({:add_pad, user_id}, :audio_dispatcher, _ctx, state) do
+  def handle_child_notification({:add_pad, user_id}, :dispatcher_audio, _ctx, state) do
     spec =
-      get_child(:audio_dispatcher)
+      get_child(:dispatcher_audio)
       |> via_out(Pad.ref(:output, user_id))
       |> child(:audio_sink, %Membrane.File.Sink{location: state.audio})
 
