@@ -18,6 +18,7 @@ workflows:
             tags:
               only: /v.*/
       - elixir/test:
+          cache-version: 3
           requires: 
             - elixir/build_test
           filters:
