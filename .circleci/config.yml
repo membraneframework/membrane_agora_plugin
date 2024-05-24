@@ -13,6 +13,8 @@ workflows:
               only: /v.*/
       - elixir/build_test:
           name: build_test2
+          requires:
+            - build_test1
           filters: &filters
             tags:
               only: /v.*/
