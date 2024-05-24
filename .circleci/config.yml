@@ -7,20 +7,13 @@ workflows:
   build:
     jobs:
       - elixir/build_test:
-          name: build_test1
-          filters: &filters
-            tags:
-              only: /v.*/
-      - elixir/build_test:
-          name: build_test2
-          requires:
-            - build_test1
+          post-steps: # steps to run after steps defined in the job bar
+              - run:
+                  command: mix compile --force
           filters: &filters
             tags:
               only: /v.*/
       - elixir/test:
-          requires:
-            - build_test2
           filters:
             <<: *filters
       - elixir/lint:
@@ -29,7 +22,7 @@ workflows:
           docs: false
       - elixir/hex_publish:
           requires:
-            - build_test2
+            - elixir/build_test
             - elixir/test
             - elixir/lint
           context:
