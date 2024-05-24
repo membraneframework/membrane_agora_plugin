@@ -9,6 +9,7 @@ workflows:
       - elixir/build_test:
           post-steps: # steps to run after steps defined in the job bar
               - elixir/use_build_cache:
+                  cache-version: 3
                   env: test
                   regenerate: true
                   before-save:
