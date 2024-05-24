@@ -8,8 +8,11 @@ workflows:
     jobs:
       - elixir/build_test:
           post-steps: # steps to run after steps defined in the job bar
-              - run:
-                  command: mix compile --force
+              - elixir/use_build_cache:
+                  env: test
+                  regenerate: true
+                  before-save:
+                    - run: mix compile --force --warnings-as-errors
           filters: &filters
             tags:
               only: /v.*/
