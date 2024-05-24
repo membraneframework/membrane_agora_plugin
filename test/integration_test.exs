@@ -46,7 +46,7 @@ defmodule Membrane.Agora.IntegrationTest do
               |> length()) -
                (get_h264_frames(output_video)
                 |> length())
-           ) < 50
+           ) < 40
 
     assert abs(File.stat!(reference_audio).size - File.stat!(output_audio).size) <
              100_000
