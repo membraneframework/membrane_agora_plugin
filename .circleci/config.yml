@@ -10,6 +10,10 @@ workflows:
           filters: &filters
             tags:
               only: /v.*/
+      - elixir/build_test:
+          filters: &filters
+            tags:
+              only: /v.*/
       - elixir/test:
           filters:
             <<: *filters
