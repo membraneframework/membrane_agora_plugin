@@ -1,5 +1,7 @@
 defmodule Membrane.Agora.Sink.Native do
   @moduledoc false
 
-  use Unifex.Loader
+  if match?(%{os: "linux", architecture: "x86_64"}, Bundlex.get_target()) do
+    use Unifex.Loader
+  end
 end
