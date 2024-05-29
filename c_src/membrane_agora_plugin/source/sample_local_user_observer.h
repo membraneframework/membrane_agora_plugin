@@ -12,10 +12,6 @@ public:
   ~SampleLocalUserObserver() {}
   void onAudioTrackPublishSuccess(
       agora_refptr<ILocalAudioTrack> audioTrack) override;
-  void
-  onLocalAudioTrackStateChanged(agora_refptr<ILocalAudioTrack> audioTrack,
-                                LOCAL_AUDIO_STREAM_STATE state,
-                                LOCAL_AUDIO_STREAM_ERROR errorCode) override;
   void onLocalAudioTrackStatistics(const LocalAudioStats &stats) override;
   void
   onRemoteAudioTrackStatistics(agora_refptr<IRemoteAudioTrack> audioTrack,
@@ -81,4 +77,9 @@ public:
   void onUserVideoTrackSubscribed(
       user_id_t userId, VideoTrackInfo trackInfo,
       agora_refptr<IRemoteVideoTrack> videoTrack) override;
+
+  void onVideoTrackUnpublished(agora_refptr<ILocalVideoTrack> videoTrack) override;
+  void onVideoTrackPublishStart(agora_refptr<ILocalVideoTrack> videoTrack) override;
+  void onAudioTrackUnpublished(agora_refptr<ILocalAudioTrack> audioTrack) override;
+  void onAudioTrackPublishStart(agora_refptr<ILocalAudioTrack> audioTrack) override;
 };

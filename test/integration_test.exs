@@ -53,7 +53,8 @@ defmodule Membrane.Agora.IntegrationTest do
   end
 
   defp get_h264_frames(path) do
-    alias Membrane.H264.Parser.{AUSplitter, NALuParser, NALuSplitter}
+    alias Membrane.H264.{AUSplitter, NALuParser}
+    alias Membrane.H26x.NALuSplitter
     bytestream = File.read!(path)
 
     nalu_splitter = NALuSplitter.new()
