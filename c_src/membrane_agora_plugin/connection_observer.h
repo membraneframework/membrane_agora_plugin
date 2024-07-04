@@ -63,7 +63,6 @@ public: // IRtcConnectionObserver
   void onLastmileProbeResult(const LastmileProbeResult &result) override;
 
   void onChannelMediaRelayStateChanged(int state, int code) override;
-  void onIntraRequestReceived() override;
 
 private:
   std::atomic<bool> _is_connected;

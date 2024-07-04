@@ -85,6 +85,8 @@ public:
   void onVideoTrackPublishStart(agora_refptr<ILocalVideoTrack> videoTrack) override;
   void onAudioTrackUnpublished(agora_refptr<ILocalAudioTrack> audioTrack) override;
   void onAudioTrackPublishStart(agora_refptr<ILocalAudioTrack> audioTrack) override;
+  void onIntraRequestReceived() override;
+
 
   private:
     std::optional<UnifexPid> _destination;
