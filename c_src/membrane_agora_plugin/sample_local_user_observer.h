@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unifex/unifex.h>
 #include "AgoraBase.h"
 #include "NGIAgoraLocalUser.h"
 
@@ -8,8 +9,8 @@ using namespace agora::rtc;
 
 class SampleLocalUserObserver : public ILocalUserObserver {
 public:
-  SampleLocalUserObserver() {}
-  ~SampleLocalUserObserver() {}
+  SampleLocalUserObserver():  _destination(std::nullopt){}
+  ~SampleLocalUserObserver(UnifexPid destination):  _destination(destination) {}
   void onAudioTrackPublishSuccess(
       agora_refptr<ILocalAudioTrack> audioTrack) override;
   void onLocalAudioTrackStatistics(const LocalAudioStats &stats) override;
