@@ -1,3 +1,4 @@
+#include "./_generated/sink.h"
 #include "sample_local_user_observer.h"
 
 void SampleLocalUserObserver::onAudioTrackPublishSuccess(
