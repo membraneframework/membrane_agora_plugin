@@ -1,4 +1,5 @@
 #include "sink.h"
+#include "sample_local_user_observer.h"
 
 // Once SIGINT is delivered twice to the process that runs the elixir script
 // (e.g. with ctrl+c), the script terminates. Sometimes it results in a
@@ -7,7 +8,7 @@
 // SIGTERM.
 
 UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
-                   char *userId) {
+                   char *userId, UnifexPid destination) {
 
   // sink's native state initialization
   SinkState *state = unifex_alloc_state(env);
@@ -44,7 +45,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   auto connObserver = std::make_shared<ConnectionObserver>(state->connection);
   state->connection->registerObserver(connObserver.get());
 
-  auto localUserObserver = std::make_shared<SampleLocalUserObserver>(connection->getLocalUser());
+  auto localUserObserver = std::make_shared<SampleLocalUserObserver>(destination);
 
   int connection_res = state->connection->connect(token, channelId, userId);
   if (connection_res) {

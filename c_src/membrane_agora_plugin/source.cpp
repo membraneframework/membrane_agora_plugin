@@ -1,7 +1,7 @@
 #include "source.h"
 #include "source/sample_audio_frame_observer.h"
-#include "source/sample_local_user_observer.h"
 #include "source/sample_video_encoded_frame_observer.h"
+#include "sample_local_user_observer.h"
 
 UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
                    char *userId, UnifexPid destination) {

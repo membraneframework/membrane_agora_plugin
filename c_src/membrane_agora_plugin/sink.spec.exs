@@ -7,7 +7,8 @@ spec(
     app_id :: string,
     token :: string,
     channel_id :: string,
-    user_id :: string
+    user_id :: string,
+    destination :: pid
   ) :: {:ok :: label, state} | {:error :: label, reason :: atom}
 )
 

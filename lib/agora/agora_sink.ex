@@ -64,7 +64,7 @@ defmodule Membrane.Agora.Sink do
   def handle_setup(_ctx, state) do
     {:ok, native_state} =
       try do
-        Native.create(state.app_id, state.token, state.channel_name, state.user_id)
+        Native.create(state.app_id, state.token, state.channel_name, state.user_id, self())
       rescue
         _e in UndefinedFunctionError ->
           reraise(
@@ -124,5 +124,10 @@ defmodule Membrane.Agora.Sink do
   def handle_buffer(Pad.ref(:audio, _id), buffer, _ctx, state) do
     :ok = Native.write_audio_data(buffer.payload, state.native_state)
     {[], state}
+  end
+
+  @impl true
+  def handle_info(:keyframe_request, _ctx, state) do
+    {[event: {:input, %Membrane.H264.FFmpeg.KeyframeRequestEvent{}}], state}
   end
 end
