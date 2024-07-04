@@ -71,7 +71,7 @@ void SampleLocalUserObserver::onVideoTrackUnpublished(agora_refptr<ILocalVideoTr
 void SampleLocalUserObserver::onVideoTrackPublishStart(agora_refptr<ILocalVideoTrack> videoTrack) {}
 void SampleLocalUserObserver::onAudioTrackUnpublished(agora_refptr<ILocalAudioTrack> audioTrack) {}
 void SampleLocalUserObserver::onAudioTrackPublishStart(agora_refptr<ILocalAudioTrack> audioTrack) {}
-void onIntraRequestReceived() {
+void SampleLocalUserObserver::onIntraRequestReceived() {
     printf("Keyframe request received \n");
 
    if (_destination.has_value()) {

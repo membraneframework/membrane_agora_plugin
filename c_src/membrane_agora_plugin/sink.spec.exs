@@ -39,6 +39,6 @@ spec(
 
 sends {:user_joined :: label, id :: string}
 sends {:user_left :: label, id :: string}
-sends {:keyframe_request :: label}
+sends :keyframe_request :: label
 
 dirty :cpu, [:create, :write_video_data, :update_video_stream_format, :write_audio_data, :update_audio_stream_format]
