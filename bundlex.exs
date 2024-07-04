@@ -7,7 +7,7 @@ defmodule Membrane.Agora.BundlexProject do
     ]
   end
 
-  defp natives(%{architecture: "x86_64", os: "linux"}) do
+  defp natives(%{os: "linux"}) do
     unless System.get_env("AGORA_SDK_PRESENT") == "true", do: System.shell("./install.sh")
 
     [
