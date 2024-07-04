@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unifex/unifex.h>
+#include <optional>
 #include "AgoraBase.h"
 #include "NGIAgoraLocalUser.h"
 
