@@ -87,7 +87,6 @@ public:
   void onAudioTrackPublishStart(agora_refptr<ILocalAudioTrack> audioTrack) override;
   void onIntraRequestReceived() override;
 
-
   private:
     std::optional<UnifexPid> _destination;
 };

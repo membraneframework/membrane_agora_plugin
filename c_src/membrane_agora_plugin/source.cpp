@@ -77,22 +77,21 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
 }
 
 void handle_destroy_state(UnifexEnv *env, SourceState *state) {
-  state->connection->unregisterObserver(state->connObserver.get());
-  state->connObserver.reset();
-
-  state->connection->getLocalUser()->unregisterLocalUserObserver(
-      state->localUserObserver.get());
-  state->connection->getLocalUser()->unregisterVideoEncodedFrameObserver(
-      state->videoEncodedFrameObserver.get());
-  state->connection->getLocalUser()->unregisterAudioFrameObserver(
-      state->audioFrameObserver.get());
-
-  state->localUserObserver.reset();
-  state->videoEncodedFrameObserver.reset();
-  state->audioFrameObserver.reset();
-
   UNUSED(env);
   if (state->connection) {
+    state->connection->unregisterObserver(state->connObserver.get());
+    state->connObserver.reset();
+
+    state->connection->getLocalUser()->unregisterLocalUserObserver(
+        state->localUserObserver.get());
+    state->connection->getLocalUser()->unregisterVideoEncodedFrameObserver(
+        state->videoEncodedFrameObserver.get());
+    state->connection->getLocalUser()->unregisterAudioFrameObserver(
+        state->audioFrameObserver.get());
+
+    state->localUserObserver.reset();
+    state->videoEncodedFrameObserver.reset();
+    state->audioFrameObserver.reset();
     if (state->connection->disconnect()) {
       AG_LOG(ERROR, "Failed to disconnect from Agora channel!");
       return;
