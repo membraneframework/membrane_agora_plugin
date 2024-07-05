@@ -1,5 +1,6 @@
 #include "./_generated/sink.h"
 #include "sample_local_user_observer.h"
+#include "common.h"
 
 void SampleLocalUserObserver::onAudioTrackPublishSuccess(
     agora_refptr<ILocalAudioTrack> audioTrack) {}
@@ -73,7 +74,7 @@ void SampleLocalUserObserver::onVideoTrackPublishStart(agora_refptr<ILocalVideoT
 void SampleLocalUserObserver::onAudioTrackUnpublished(agora_refptr<ILocalAudioTrack> audioTrack) {}
 void SampleLocalUserObserver::onAudioTrackPublishStart(agora_refptr<ILocalAudioTrack> audioTrack) {}
 void SampleLocalUserObserver::onIntraRequestReceived() {
-    printf("Keyframe request received \n");
+    AG_LOG(ERROR, "Keyframe request received");
 
    if (_destination.has_value()) {
     UnifexEnv *env = unifex_alloc_env(NULL);
