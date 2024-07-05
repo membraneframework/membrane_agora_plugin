@@ -11,8 +11,12 @@ using namespace agora::rtc;
 class SampleLocalUserObserver : public ILocalUserObserver {
 public:
   SampleLocalUserObserver():  _destination(std::nullopt){}
-  SampleLocalUserObserver(UnifexPid destination):  _destination(destination) {}
-  ~SampleLocalUserObserver() {}
+  SampleLocalUserObserver(ILocalUser *localUser, UnifexPid destination): _localUser(localUser), _destination(destination) {
+    _localUser->registerLocalUserObserver(this);
+  }
+  ~SampleLocalUserObserver() {
+    _localUser->unregisterLocalUserObserver(this);
+  }
   void onAudioTrackPublishSuccess(
       agora_refptr<ILocalAudioTrack> audioTrack) override;
   void onLocalAudioTrackStatistics(const LocalAudioStats &stats) override;
@@ -89,4 +93,5 @@ public:
 
   private:
     std::optional<UnifexPid> _destination;
+    ILocalUser *_localUser;
 };
