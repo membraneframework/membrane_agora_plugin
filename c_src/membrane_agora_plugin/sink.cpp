@@ -106,7 +106,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
 
   // cleaning up
   state->connection->unregisterObserver(connObserver.get());
-  localUserObserver.reset();
+  //localUserObserver.reset();
   connObserver.reset();
   UNIFEX_TERM res = create_result_ok(env, state);
   unifex_release_state(env, state);
