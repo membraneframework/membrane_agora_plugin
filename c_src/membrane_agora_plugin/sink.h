@@ -14,6 +14,7 @@
 #include "NGIAgoraMediaNodeFactory.h"
 #include "NGIAgoraRtcConnection.h"
 #include "NGIAgoraVideoTrack.h"
+#include "NGIAgoraLocalUser.h"
 
 #include "common.h"
 #include "connection_observer.h"
@@ -28,6 +29,7 @@ typedef struct {
       audioEncodedFrameSender;
   agora::agora_refptr<agora::rtc::ILocalVideoTrack> customVideoTrack;
   agora::agora_refptr<agora::rtc::ILocalAudioTrack> customAudioTrack;
+  std::shared_ptr<ILocalUserObserver> localUserObserver;
 
   // video track parameters
   unsigned int width;
