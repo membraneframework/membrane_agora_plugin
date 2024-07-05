@@ -45,8 +45,8 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   auto connObserver = std::make_shared<ConnectionObserver>(state->connection);
   state->connection->registerObserver(connObserver.get());
 
-  auto localUserObserver = std::make_shared<SampleLocalUserObserver>(destination);
-  state->connection->getLocalUser()->registerLocalUserObserver(localUserObserver.get());
+  // auto localUserObserver = std::make_shared<SampleLocalUserObserver>(destination);
+  // state->connection->getLocalUser()->registerLocalUserObserver(localUserObserver.get());
 
   int connection_res = state->connection->connect(token, channelId, userId);
   if (connection_res) {
@@ -106,7 +106,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
 
   // cleaning up
   state->connection->unregisterObserver(connObserver.get());
-  localUserObserver.reset();
+  //localUserObserver.reset();
   connObserver.reset();
   UNIFEX_TERM res = create_result_ok(env, state);
   unifex_release_state(env, state);
