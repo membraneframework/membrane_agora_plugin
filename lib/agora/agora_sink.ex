@@ -133,7 +133,8 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_info(_msg, _ctx, state) do
+  def handle_info(msg, _ctx, state) do
+    IO.inspect(msg, label: :unhandled_msg)
     {[], state}
   end
 end
