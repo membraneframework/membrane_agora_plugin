@@ -127,8 +127,13 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_info(:keyframe_request, _ctx, state) do
+  def handle_info(:keyframe_request, %{playback: :playing}, state) do
     IO.inspect("Requesting for keyframe")
     {[event: {:input, %Membrane.H264.FFmpeg.KeyframeRequestEvent{}}], state}
+  end
+
+  @impl true
+  def handle_info(_msg, _ctx, state) do
+    {[], state}
   end
 end
