@@ -53,7 +53,7 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   }
   connObserver->waitUntilConnected();
 
-  auto localUserObserver = std::make_shared<SampleLocalUserObserver>(destination);
+  auto localUserObserver = std::make_shared<SampleLocalUserObserver>(state->connection->getLocalUser(), destination);
   // senders creation
   agora::agora_refptr<agora::rtc::IMediaNodeFactory> factory =
       state->service->createMediaNodeFactory();
