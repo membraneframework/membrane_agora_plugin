@@ -29,7 +29,7 @@ typedef struct {
       audioEncodedFrameSender;
   agora::agora_refptr<agora::rtc::ILocalVideoTrack> customVideoTrack;
   agora::agora_refptr<agora::rtc::ILocalAudioTrack> customAudioTrack;
-  std::shared_ptr<IRtcConnectionObserver> connObserver;
+  std::shared_ptr<ConnectionObserver> connObserver;
   std::shared_ptr<ILocalUserObserver> localUserObserver;
 
   // video track parameters

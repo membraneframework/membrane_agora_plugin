@@ -100,7 +100,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   state->customAudioTrack->setEnabled(true);
   state->connection->getLocalUser()->publishVideo(state->customVideoTrack);
   state->connection->getLocalUser()->publishAudio(state->customAudioTrack);
-
   state->connObserver->waitUntilConnected();
 
   UNIFEX_TERM res = create_result_ok(env, state);
