@@ -42,8 +42,8 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   s->setBool("che.video.has_intra_request", false);
 
   // connecting
-  auto connObserver = std::make_shared<ConnectionObserver>(state->connection);
-  state->connection->registerObserver(connObserver.get());
+  state->connObserver = std::make_shared<ConnectionObserver>(state->connection);
+  state->connection->registerObserver(state->connObserver.get());
 
   int connection_res = state->connection->connect(token, channelId, userId);
   if (connection_res) {
@@ -51,7 +51,6 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
     unifex_release_state(env, state);
     return create_result_error(env, "Failed to connect to Agora channel!");
   }
-  connObserver->waitUntilConnected();
 
   state->localUserObserver = std::make_shared<SampleLocalUserObserver>(state->connection->getLocalUser(), destination);
   // senders creation
@@ -102,9 +101,8 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   state->connection->getLocalUser()->publishVideo(state->customVideoTrack);
   state->connection->getLocalUser()->publishAudio(state->customAudioTrack);
 
-  // cleaning up
-  state->connection->unregisterObserver(connObserver.get());
-  connObserver.reset();
+  state->connObserver->waitUntilConnected();
+
   UNIFEX_TERM res = create_result_ok(env, state);
   unifex_release_state(env, state);
 
@@ -172,6 +170,9 @@ UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
 void handle_destroy_state(UnifexEnv *env, SinkState *state) {
   UNUSED(env);
   if (state->connection) {
+    // cleaning up
+    state->connection->unregisterObserver(state->connObserver.get());
+    state->connObserver.reset();
     state->localUserObserver.reset();
     if (state->customVideoTrack) {
       state->connection->getLocalUser()->unpublishVideo(
