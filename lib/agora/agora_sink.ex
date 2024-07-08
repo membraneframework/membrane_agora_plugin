@@ -127,9 +127,18 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_info(:keyframe_request, %{playback: :playing}, state) do
+  def handle_info(:keyframe_request, %{playback: :playing} = ctx, state) do
+    video_pad =
+      ctx.pads
+      |> Map.keys()
+      |> Enum.find(fn
+        Pad.ref(:video, _id) -> true
+        _other_pad -> false
+      end)
+
     IO.inspect("Requesting for keyframe")
-    {[event: {:video, %Membrane.H264.FFmpeg.KeyframeRequestEvent{}}], state}
+
+    {[event: {video_pad, %Membrane.H264.FFmpeg.KeyframeRequestEvent{}}], state}
   end
 
   @impl true
