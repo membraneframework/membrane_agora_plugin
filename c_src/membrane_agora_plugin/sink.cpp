@@ -172,6 +172,7 @@ UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
 void handle_destroy_state(UnifexEnv *env, SinkState *state) {
   UNUSED(env);
   if (state->connection) {
+    state->localUserObserver.reset();
     if (state->customVideoTrack) {
       state->connection->getLocalUser()->unpublishVideo(
           state->customVideoTrack);

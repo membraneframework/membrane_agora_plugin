@@ -52,14 +52,14 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   state->connection->getLocalUser()->subscribeAllVideo(options);
   state->connection->getLocalUser()->subscribeAllAudio();
 
-  state->localUserObserver = std::make_shared<SampleLocalUserObserver>();
+  //state->localUserObserver = std::make_shared<SampleLocalUserObserver>();
   state->videoEncodedFrameObserver =
       std::make_shared<SampleVideoEncodedFrameObserver>(destination);
   state->audioFrameObserver =
       std::make_shared<SampleAudioFrameObserver>(destination);
 
-  state->connection->getLocalUser()->registerLocalUserObserver(
-      state->localUserObserver.get());
+  // state->connection->getLocalUser()->registerLocalUserObserver(
+  //     state->localUserObserver.get());
 
   state->connection->getLocalUser()->registerVideoEncodedFrameObserver(
       state->videoEncodedFrameObserver.get());
@@ -82,14 +82,14 @@ void handle_destroy_state(UnifexEnv *env, SourceState *state) {
     state->connection->unregisterObserver(state->connObserver.get());
     state->connObserver.reset();
 
-    state->connection->getLocalUser()->unregisterLocalUserObserver(
-        state->localUserObserver.get());
+    //state->connection->getLocalUser()->unregisterLocalUserObserver(
+    //    state->localUserObserver.get());
     state->connection->getLocalUser()->unregisterVideoEncodedFrameObserver(
         state->videoEncodedFrameObserver.get());
     state->connection->getLocalUser()->unregisterAudioFrameObserver(
         state->audioFrameObserver.get());
 
-    state->localUserObserver.reset();
+    //state->localUserObserver.reset();
     state->videoEncodedFrameObserver.reset();
     state->audioFrameObserver.reset();
     if (state->connection->disconnect()) {
