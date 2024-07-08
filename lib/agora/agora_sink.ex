@@ -61,7 +61,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_setup(_ctx, state) do
+  def handle_playing(_ctx, state) do
     {:ok, native_state} =
       try do
         Native.create(state.app_id, state.token, state.channel_name, state.user_id, self())
