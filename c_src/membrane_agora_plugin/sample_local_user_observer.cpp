@@ -74,7 +74,7 @@ void SampleLocalUserObserver::onVideoTrackPublishStart(agora_refptr<ILocalVideoT
 void SampleLocalUserObserver::onAudioTrackUnpublished(agora_refptr<ILocalAudioTrack> audioTrack) {}
 void SampleLocalUserObserver::onAudioTrackPublishStart(agora_refptr<ILocalAudioTrack> audioTrack) {}
 void SampleLocalUserObserver::onIntraRequestReceived() {
-    AG_LOG(ERROR, "Keyframe request received");
+    AG_LOG(INFO, "Keyframe request received");
 
    if (_destination.has_value()) {
     UnifexEnv *env = unifex_alloc_env(NULL);
