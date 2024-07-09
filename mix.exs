@@ -47,9 +47,6 @@ defmodule Membrane.Agora.Mixfile do
       {:membrane_h26x_plugin, "~> 0.10.0", only: :test},
       {:membrane_aac_plugin, "~> 0.18.1", only: :test},
       {:membrane_realtimer_plugin, "~> 0.9.0", only: :test},
-      # {:membrane_h264_ffmpeg_plugin, "~> 0.17.2"},
-      {:membrane_h264_ffmpeg_plugin,
-       github: "membraneframework/membrane_h264_ffmpeg_plugin", branch: "force_keyframes"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}
