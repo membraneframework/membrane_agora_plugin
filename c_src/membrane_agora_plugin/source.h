@@ -18,7 +18,6 @@ typedef struct {
   agora::base::IAgoraService *service = NULL;
   agora::agora_refptr<agora::rtc::IRtcConnection> connection;
   std::shared_ptr<ConnectionObserver> connObserver;
-  std::shared_ptr<agora::rtc::ILocalUserObserver> localUserObserver;
   std::shared_ptr<agora::media::IVideoEncodedFrameObserver>
       videoEncodedFrameObserver;
   std::shared_ptr<agora::media::IAudioFrameObserverBase> audioFrameObserver;

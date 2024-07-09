@@ -49,7 +49,6 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
     end
   end
 
-  @channel_name System.get_env("AGORA_CHANNEL_NAME", "")
   @app_id System.get_env("AGORA_APP_ID", "")
   @certificate System.get_env("AGORA_CERTIFICATE", "")
 
@@ -59,8 +58,8 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
 
     spec = [
       child(:source, %Membrane.Agora.Source{
-        channel_name: @channel_name,
-        token: TokenGenerator.get_token(@certificate, @app_id, @channel_name, user_id),
+        channel_name: opts[:channel_name],
+        token: TokenGenerator.get_token(@certificate, @app_id, opts[:channel_name], user_id),
         app_id: @app_id,
         user_id: user_id
       })

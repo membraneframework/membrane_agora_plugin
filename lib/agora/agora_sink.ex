@@ -136,14 +136,11 @@ defmodule Membrane.Agora.Sink do
         _other_pad -> false
       end)
 
-    IO.inspect("Requesting for keyframe")
-
-    {[event: {video_pad, %Membrane.H264.FFmpeg.KeyframeRequestEvent{}}], state}
+    {[event: {video_pad, %Membrane.KeyframeRequestEvent{}}], state}
   end
 
   @impl true
   def handle_info(msg, _ctx, state) do
-    IO.inspect(msg, label: :unhandled_msg)
     {[], state}
   end
 end
