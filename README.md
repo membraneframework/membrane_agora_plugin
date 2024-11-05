@@ -20,7 +20,7 @@ docker run -it membraneframeworklabs/docker_membrane
 
 To use that plugin in your project, add the following line to your deps in `mix.exs`:
 ```
-	{:membrane_agora_plugin, "~> 0.2.4"}
+	{:membrane_agora_plugin, "~> 0.2.5"}
 ```
 
 Run `mix deps.get`.
