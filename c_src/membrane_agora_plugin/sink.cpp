@@ -23,7 +23,9 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   scfg.enableAudioDevice = false;
   scfg.enableVideo = true;
   scfg.useStringUid = false;
-  if (state->service->initialize(scfg) != agora::ERR_OK) {
+  int result = state->service->initialize(scfg);
+  if (result != agora::ERR_OK) {
+    printf("RESULT: %d\n", result);
     AG_LOG(ERROR, "Failed to initialize service");
     unifex_release_state(env, state);
     return create_result_error(env, "Failed to initialize service");
