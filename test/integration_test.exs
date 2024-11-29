@@ -22,6 +22,8 @@ defmodule Membrane.Agora.IntegrationTest do
         custom_args: [audio: output_audio, video: output_video, framerate: framerate]
       )
 
+    Process.sleep(1_000)
+
     {:ok, _supervisor, sender_pipeline} =
       Membrane.Testing.Pipeline.start_link(
         module: SenderPipeline,
