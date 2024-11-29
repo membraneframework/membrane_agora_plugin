@@ -63,10 +63,13 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_playing(_ctx, state) do
-    {:ok, native_state} =
+    native_state =
       try do
         start_time = Membrane.Time.os_time()
-        Native.create(state.app_id, state.token, state.channel_name, state.user_id)
+
+        {:ok, native_state} =
+          Native.create(state.app_id, state.token, state.channel_name, state.user_id)
+
         duration = Membrane.Time.os_time() - start_time
         duration_ms = Membrane.Time.as_milliseconds(duration, :round)
         Membrane.Logger.info("Agora SDK initialization took: #{duration_ms} ms")
@@ -77,6 +80,8 @@ defmodule Membrane.Agora.Sink do
           The initial demand made by this sink might be delayed.
           """)
         end
+
+        native_state
       rescue
         _e in UndefinedFunctionError ->
           reraise(
