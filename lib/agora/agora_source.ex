@@ -69,7 +69,7 @@ defmodule Membrane.Agora.Source do
         start_time = Membrane.Time.os_time()
 
         {:ok, native_state} =
-          Native.create(state.app_id, state.token, state.channel_name, state.user_id)
+          Native.create(state.app_id, state.token, state.channel_name, state.user_id, self())
 
         duration = Membrane.Time.os_time() - start_time
         duration_ms = Membrane.Time.as_milliseconds(duration, :round)
