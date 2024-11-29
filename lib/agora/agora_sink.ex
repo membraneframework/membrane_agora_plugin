@@ -62,7 +62,7 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_playing(_ctx, state) do
+  def handle_setup(_ctx, state) do
     native_state =
       try do
         start_time = Membrane.Time.os_time()
