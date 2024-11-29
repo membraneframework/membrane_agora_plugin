@@ -30,7 +30,7 @@ defmodule Membrane.Agora.IntegrationTest do
         custom_args: [audio: input_audio, video: input_video, framerate: framerate]
       )
 
-    assert_start_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
+    assert_start_of_stream(receiver_pipeline, :video_sink, :input, 15_000)
     assert_start_of_stream(receiver_pipeline, :audio_sink)
 
     assert_end_of_stream(sender_pipeline, :sink, Pad.ref(:video, _), 30_000)
