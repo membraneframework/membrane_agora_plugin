@@ -1,7 +1,7 @@
 defmodule Membrane.Agora.Mixfile do
   use Mix.Project
 
-  @version "0.2.5"
+  @version "0.3.0"
   @github_url "https://github.com/membraneframework/membrane_agora_plugin"
 
   def project do
@@ -44,7 +44,7 @@ defmodule Membrane.Agora.Mixfile do
       {:membrane_raw_audio_format, "~> 0.12.0"},
       {:unifex, "~> 1.1"},
       {:membrane_file_plugin, "~> 0.16.0", only: :test},
-      {:membrane_h264_plugin, "~> 0.9.0", only: :test},
+      {:membrane_h26x_plugin, "~> 0.10.0", only: :test},
       {:membrane_aac_plugin, "~> 0.18.1", only: :test},
       {:membrane_realtimer_plugin, "~> 0.9.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},

@@ -15,7 +15,7 @@ public:
   SampleVideoEncodedFrameObserver(UnifexPid destination)
       : _destination(destination) {}
 
-  bool OnEncodedVideoFrame(
+  bool onEncodedVideoFrameReceived(
       uid_t uid, const uint8_t *imageBuffer, size_t length,
       const EncodedVideoFrameInfo &videoEncodedFrameInfo) override;
 };
