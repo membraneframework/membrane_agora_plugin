@@ -14,7 +14,7 @@ defmodule Membrane.Agora.BundlexProject do
       sink: [
         sources: ["sink.cpp", "connection_observer.cpp"],
         includes: ["agora_sdk/include/"],
-        libs: ["agora_rtc_sdk", "agora-ffmpeg"],
+        libs: ["agora_rtc_sdk", "agora-fdkaac", "agora-core"],
         lib_dirs: ["agora_sdk/"],
         deps: [unifex: :unifex],
         interface: [:nif],
@@ -30,7 +30,7 @@ defmodule Membrane.Agora.BundlexProject do
           "source/sample_local_user_observer.cpp"
         ],
         includes: ["agora_sdk/include/"],
-        libs: ["agora_rtc_sdk", "agora-ffmpeg"],
+        libs: ["agora_rtc_sdk", "agora-fdkaac", "agora-core"],
         lib_dirs: ["agora_sdk/"],
         deps: [unifex: :unifex],
         interface: [:nif],
