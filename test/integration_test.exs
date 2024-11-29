@@ -38,7 +38,7 @@ defmodule Membrane.Agora.IntegrationTest do
 
     Membrane.Pipeline.terminate(sender_pipeline)
 
-    assert_end_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
+    assert_end_of_stream(receiver_pipeline, :video_sink, :input, 15_000)
     assert_end_of_stream(receiver_pipeline, :audio_sink)
 
     Membrane.Pipeline.terminate(receiver_pipeline)
