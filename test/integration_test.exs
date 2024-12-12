@@ -5,7 +5,9 @@ defmodule Membrane.Agora.IntegrationTest do
 
   for audio_codec <- [:aac, :opus] do
     @tag :tmp_dir
-    test "if the data is sent to Agora properly", %{tmp_dir: dir} do
+    test "if the data is sent to Agora properly when audio codec is #{unquote(audio_codec)}", %{
+      tmp_dir: dir
+    } do
       require Membrane.Pad, as: Pad
 
       framerate = {12, 1}
