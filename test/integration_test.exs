@@ -1,5 +1,5 @@
 defmodule Membrane.Agora.IntegrationTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
   import Membrane.Testing.Assertions
   alias Membrane.Agora.Support.{ReceiverPipeline, SenderPipeline}
 
