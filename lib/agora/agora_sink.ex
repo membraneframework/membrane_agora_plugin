@@ -99,7 +99,7 @@ defmodule Membrane.Agora.Sink do
   def handle_stream_format(Pad.ref(:audio, _id), stream_format, _ctx, state) do
     {:ok, native_state} =
       Native.update_audio_stream_format(
-        stream_format.sample_rate,
+        stream_format[:sample_rate] || 48000,
         stream_format.channels,
         stream_format.samples_per_frame,
         state.native_state
