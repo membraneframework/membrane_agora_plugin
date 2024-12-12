@@ -3,70 +3,73 @@ defmodule Membrane.Agora.IntegrationTest do
   import Membrane.Testing.Assertions
   alias Membrane.Agora.Support.{ReceiverPipeline, SenderPipeline}
 
-  @tag :tmp_dir
-  test "if the data is sent to Agora properly", %{tmp_dir: dir} do
-    require Membrane.Pad, as: Pad
 
-    framerate = {12, 1}
-    input_video = "test/fixtures/in_video.h264"
-    output_video = "#{dir}/video.h264"
-    reference_video = input_video
+  for audio_codec <- [:aac, :opus] do
+    @tag :tmp_dir
+    test "if the data is sent to Agora properly", %{tmp_dir: dir} do
+      require Membrane.Pad, as: Pad
 
-    input_audio = "test/fixtures/in_audio.aac"
-    output_audio = "#{dir}/audio.pcm"
-    reference_audio = "test/fixtures/in_audio.pcm"
+      framerate = {12, 1}
+      input_video = "test/fixtures/in_video.h264"
+      output_video = "#{dir}/video.h264"
+      reference_video = input_video
 
-    {:ok, _supervisor, receiver_pipeline} =
-      Membrane.Testing.Pipeline.start_link(
-        module: ReceiverPipeline,
-        custom_args: [audio: output_audio, video: output_video, framerate: framerate]
-      )
+      input_audio = "test/fixtures/in_audio.#{unquote(audio_codec)}"
+      output_audio = "#{dir}/audio_#{unquote(audio_codec)}.pcm"
+      reference_audio = "test/fixtures/in_audio.pcm"
 
-    {:ok, _supervisor, sender_pipeline} =
-      Membrane.Testing.Pipeline.start_link(
-        module: SenderPipeline,
-        custom_args: [audio: input_audio, video: input_video, framerate: framerate]
-      )
+      {:ok, _supervisor, receiver_pipeline} =
+        Membrane.Testing.Pipeline.start_link(
+          module: ReceiverPipeline,
+          custom_args: [audio: output_audio, video: output_video, framerate: framerate]
+        )
 
-    assert_start_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
-    assert_start_of_stream(receiver_pipeline, :audio_sink)
+      {:ok, _supervisor, sender_pipeline} =
+        Membrane.Testing.Pipeline.start_link(
+          module: SenderPipeline,
+          custom_args: [audio: input_audio, video: input_video, framerate: framerate]
+        )
 
-    assert_end_of_stream(sender_pipeline, :sink, Pad.ref(:video, _), 30_000)
-    assert_end_of_stream(sender_pipeline, :sink, Pad.ref(:audio, _), 30_000)
+      assert_start_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
+      assert_start_of_stream(receiver_pipeline, :audio_sink)
 
-    Membrane.Pipeline.terminate(sender_pipeline)
+      assert_end_of_stream(sender_pipeline, :sink, Pad.ref(:video, _), 30_000)
+      assert_end_of_stream(sender_pipeline, :sink, Pad.ref(:audio, _), 30_000)
 
-    assert_end_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
-    assert_end_of_stream(receiver_pipeline, :audio_sink)
+      Membrane.Pipeline.terminate(sender_pipeline)
 
-    Membrane.Pipeline.terminate(receiver_pipeline)
+      assert_end_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
+      assert_end_of_stream(receiver_pipeline, :audio_sink)
 
-    assert abs(
-             (get_h264_frames(reference_video)
-              |> length()) -
-               (get_h264_frames(output_video)
-                |> length())
-           ) < 40
+      Membrane.Pipeline.terminate(receiver_pipeline)
 
-    assert abs(File.stat!(reference_audio).size - File.stat!(output_audio).size) <
-             100_000
-  end
+      assert abs(
+               (get_h264_frames(reference_video)
+                |> length()) -
+                 (get_h264_frames(output_video)
+                  |> length())
+             ) < 40
 
-  defp get_h264_frames(path) do
-    alias Membrane.H264.{AUSplitter, NALuParser}
-    alias Membrane.H26x.NALuSplitter
-    bytestream = File.read!(path)
+      assert abs(File.stat!(reference_audio).size - File.stat!(output_audio).size) <
+               100_000
+    end
 
-    nalu_splitter = NALuSplitter.new()
-    nalu_parser = NALuParser.new()
-    au_splitter = AUSplitter.new()
+    defp get_h264_frames(path) do
+      alias Membrane.H264.{AUSplitter, NALuParser}
+      alias Membrane.H26x.NALuSplitter
+      bytestream = File.read!(path)
 
-    {nalu_payloads, _nalu_splitter} = NALuSplitter.split(bytestream, true, nalu_splitter)
+      nalu_splitter = NALuSplitter.new()
+      nalu_parser = NALuParser.new()
+      au_splitter = AUSplitter.new()
 
-    {nalus, _nalu_parser} = Enum.map_reduce(nalu_payloads, nalu_parser, &NALuParser.parse(&1, &2))
+      {nalu_payloads, _nalu_splitter} = NALuSplitter.split(bytestream, true, nalu_splitter)
 
-    {aus, _au_splitter} = AUSplitter.split(nalus, true, au_splitter)
+      {nalus, _nalu_parser} = Enum.map_reduce(nalu_payloads, nalu_parser, &NALuParser.parse(&1, &2))
 
-    aus
+      {aus, _au_splitter} = AUSplitter.split(nalus, true, au_splitter)
+
+      aus
+    end
   end
 end
