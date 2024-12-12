@@ -2,6 +2,8 @@ module(Membrane.Agora.Sink.Native)
 
 state_type("SinkState")
 
+type audio_stream_format :: :aac | :opus
+
 spec(
   create(
     app_id :: string,
@@ -22,7 +24,7 @@ spec(
 )
 
 spec(
-  write_audio_data(payload, state) ::
+  write_audio_data(payload, stream_format :: audio_stream_format, state) ::
     (:ok :: label) | {:error :: label, reason :: atom}
 )
 

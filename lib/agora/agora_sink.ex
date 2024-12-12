@@ -16,7 +16,7 @@ defmodule Membrane.Agora.Sink do
 
   def_input_pad :audio,
     availability: :on_request,
-    accepted_format: Membrane.AAC,
+    accepted_format: any_of(Membrane.AAC, Membrane.Opus),
     flow_control: :auto
 
   def_options app_id: [
@@ -69,8 +69,8 @@ defmodule Membrane.Agora.Sink do
         _e in UndefinedFunctionError ->
           reraise(
             """
-            Couldn't setup NIF. Perhaps you have forgotten to set LD_LIBRARY_PATH:
-            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#{Path.expand("#{__ENV__.file}/../../../agora_sdk")}
+            Couldn't setup NIF. Perhaps you have forgotten to set LD_LIBRARY_PATH: \
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#{Path.expand("#{__ENV__.file}/../../../agora_sdk")} \
             """,
             __STACKTRACE__
           )
@@ -121,8 +121,14 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_buffer(Pad.ref(:audio, _id), buffer, _ctx, state) do
-    :ok = Native.write_audio_data(buffer.payload, state.native_state)
+  def handle_buffer(Pad.ref(:audio, _id), buffer, ctx, state) do
+    stream_format =
+      case ctx.pads.audio.stream_format do
+        %Membrane.Opus{} -> :opus
+        %Membrane.AAC{} -> :aac
+      end
+
+    :ok = Native.write_audio_data(buffer.payload, stream_format, state.native_state)
     {[], state}
   end
 end

@@ -69,8 +69,8 @@ defmodule Membrane.Agora.Source do
         _e in UndefinedFunctionError ->
           reraise(
             """
-            Couldn't setup NIF. Perhaps you have forgotten to set LD_LIBRARY_PATH:
-            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#{Path.expand("#{__ENV__.file}/../../../agora_sdk")}
+            Couldn't setup NIF. Perhaps you have forgotten to set LD_LIBRARY_PATH: \
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#{Path.expand("#{__ENV__.file}/../../../agora_sdk")} \
             """,
             __STACKTRACE__
           )
