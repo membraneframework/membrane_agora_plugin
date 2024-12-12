@@ -54,24 +54,24 @@ defmodule Membrane.Agora.IntegrationTest do
       assert abs(File.stat!(reference_audio).size - File.stat!(output_audio).size) <
                100_000
     end
+  end
 
-    defp get_h264_frames(path) do
-      alias Membrane.H264.{AUSplitter, NALuParser}
-      alias Membrane.H26x.NALuSplitter
-      bytestream = File.read!(path)
+  defp get_h264_frames(path) do
+    alias Membrane.H264.{AUSplitter, NALuParser}
+    alias Membrane.H26x.NALuSplitter
+    bytestream = File.read!(path)
 
-      nalu_splitter = NALuSplitter.new()
-      nalu_parser = NALuParser.new()
-      au_splitter = AUSplitter.new()
+    nalu_splitter = NALuSplitter.new()
+    nalu_parser = NALuParser.new()
+    au_splitter = AUSplitter.new()
 
-      {nalu_payloads, _nalu_splitter} = NALuSplitter.split(bytestream, true, nalu_splitter)
+    {nalu_payloads, _nalu_splitter} = NALuSplitter.split(bytestream, true, nalu_splitter)
 
-      {nalus, _nalu_parser} =
-        Enum.map_reduce(nalu_payloads, nalu_parser, &NALuParser.parse(&1, &2))
+    {nalus, _nalu_parser} =
+      Enum.map_reduce(nalu_payloads, nalu_parser, &NALuParser.parse(&1, &2))
 
-      {aus, _au_splitter} = AUSplitter.split(nalus, true, au_splitter)
+    {aus, _au_splitter} = AUSplitter.split(nalus, true, au_splitter)
 
-      aus
-    end
+    aus
   end
 end
