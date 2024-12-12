@@ -3,7 +3,6 @@ defmodule Membrane.Agora.IntegrationTest do
   import Membrane.Testing.Assertions
   alias Membrane.Agora.Support.{ReceiverPipeline, SenderPipeline}
 
-
   for audio_codec <- [:aac, :opus] do
     @tag :tmp_dir
     test "if the data is sent to Agora properly", %{tmp_dir: dir} do
@@ -65,7 +64,8 @@ defmodule Membrane.Agora.IntegrationTest do
 
       {nalu_payloads, _nalu_splitter} = NALuSplitter.split(bytestream, true, nalu_splitter)
 
-      {nalus, _nalu_parser} = Enum.map_reduce(nalu_payloads, nalu_parser, &NALuParser.parse(&1, &2))
+      {nalus, _nalu_parser} =
+        Enum.map_reduce(nalu_payloads, nalu_parser, &NALuParser.parse(&1, &2))
 
       {aus, _au_splitter} = AUSplitter.split(nalus, true, au_splitter)
 
