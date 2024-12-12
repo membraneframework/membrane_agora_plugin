@@ -111,7 +111,7 @@ defmodule Membrane.Agora.Sink do
   @impl true
   def handle_stream_format(Pad.ref(:audio, _id) = pad, %Membrane.Opus{} = opus, ctx, state) do
     {:ok, native_state} =
-      case ctx.pads[sample_rate].options do
+      case ctx.pads[pad].options do
         %{samples_per_frame: samples_per_frame, sample_rate: sample_rate} ->
           Native.update_audio_stream_format(
             sample_rate,
