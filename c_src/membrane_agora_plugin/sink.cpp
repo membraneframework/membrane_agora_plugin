@@ -151,16 +151,15 @@ UNIFEX_TERM update_audio_stream_format(UnifexEnv *env, int sampleRate,
 }
 
 UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
-                             AudioStreamFormat stream_format,
-                             SinkState *state) {
+                             AudioCodec codec, SinkState *state) {
   agora::rtc::EncodedAudioFrameInfo audioFrameInfo;
   audioFrameInfo.sampleRateHz = state->sampleRate;
   audioFrameInfo.numberOfChannels = state->numberOfChannels;
   audioFrameInfo.samplesPerChannel = state->samplesPerChannelPerFrame;
 
-  if (stream_format == AUDIO_STREAM_FORMAT_AAC) {
+  if (codec == AUDIO_CODEC_AAC) {
     audioFrameInfo.codec = agora::rtc::AUDIO_CODEC_TYPE::AUDIO_CODEC_AACLC;
-  } else if (stream_format == AUDIO_STREAM_FORMAT_OPUS) {
+  } else if (codec == AUDIO_CODEC_OPUS) {
     audioFrameInfo.codec = agora::rtc::AUDIO_CODEC_TYPE::AUDIO_CODEC_OPUS;
   }
 
