@@ -121,9 +121,9 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_buffer(Pad.ref(:audio, _id), buffer, ctx, state) do
+  def handle_buffer(Pad.ref(:audio, _id) = pad, buffer, ctx, state) do
     stream_format =
-      case ctx.pads.audio.stream_format do
+      case ctx.pads[pad].stream_format do
         %Membrane.Opus{} -> :opus
         %Membrane.AAC{} -> :aac
       end
