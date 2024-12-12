@@ -96,14 +96,36 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_stream_format(Pad.ref(:audio, _id), stream_format, _ctx, state) do
+  def handle_stream_format(Pad.ref(:audio, _id), %Membrane.AAC{} = aac, _ctx, state) do
     {:ok, native_state} =
       Native.update_audio_stream_format(
-        stream_format[:sample_rate] || 48000,
-        stream_format.channels,
-        stream_format.samples_per_frame,
+        aac.sample_rate,
+        aac.channels,
+        aac.samples_per_frame,
         state.native_state
       )
+
+    {[], %{state | native_state: native_state}}
+  end
+
+  @impl true
+  def handle_stream_format(Pad.ref(:audio, _id) = pad, %Membrane.Opus{} = opus, ctx, state) do
+    {:ok, native_state} =
+      case ctx.pads[sample_rate].options do
+        %{samples_per_frame: samples_per_frame, sample_rate: sample_rate} ->
+          Native.update_audio_stream_format(
+            sample_rate,
+            opus.channels,
+            samples_per_frame,
+            state.native_state
+          )
+
+        pad_options ->
+          raise """
+          Pad options has to have :samples_per_frame and :sample_rate options when the stream format is \
+          Membrane.Opus, but pad #{inspect(pad)} has options #{inspect(pad_options)}
+          """
+      end
 
     {[], %{state | native_state: native_state}}
   end
