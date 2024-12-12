@@ -38,7 +38,7 @@ defmodule Membrane.Agora.Support.SenderPipeline do
         child(%Membrane.File.Source{location: opts[:audio]})
         |> child(audio_parser)
         |> child(Membrane.Realtimer)
-        |> via_in(:audio)
+        |> via_in(:audio, options: %{sample_rate: 48_000, samples_per_frame: 960})
         |> get_child(:sink)
       ]
 

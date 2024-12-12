@@ -97,8 +97,6 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_stream_format(Pad.ref(:audio, _id), %Membrane.AAC{} = aac, _ctx, state) do
-    IO.inspect(aac, label: "DUPA AAC")
-
     {:ok, native_state} =
       Native.update_audio_stream_format(
         aac.sample_rate,
