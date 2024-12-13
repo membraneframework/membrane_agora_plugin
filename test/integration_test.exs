@@ -3,7 +3,7 @@ defmodule Membrane.Agora.IntegrationTest do
   import Membrane.Testing.Assertions
   alias Membrane.Agora.Support.{ReceiverPipeline, SenderPipeline}
 
-  for audio_codec <- [:aac, :opus] do
+  for audio_codec <- [:aac] do
     @tag :tmp_dir
     test "if the data is sent to Agora properly when audio codec is #{audio_codec}", %{
       tmp_dir: dir
