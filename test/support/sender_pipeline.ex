@@ -46,10 +46,10 @@ defmodule Membrane.Agora.Support.SenderPipeline do
         child(%Membrane.File.Source{location: opts[:audio]})
         |> child(audio_parser)
         |> case do
-          spec when parser == Membrane.AAC.Parser ->
+          spec when audio_parser == Membrane.AAC.Parser ->
             spec
 
-          spec when parser == Membrane.Opus.Parser ->
+          spec when audio_parser == Membrane.Opus.Parser ->
             spec
             |> child(Membrane.Opus.Decoder)
             |> child(Membrane.Opus.Encoder)
