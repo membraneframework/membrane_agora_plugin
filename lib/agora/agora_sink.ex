@@ -112,7 +112,11 @@ defmodule Membrane.Agora.Sink do
   def handle_stream_format(Pad.ref(:audio, _id) = pad, %Membrane.Opus{} = opus, ctx, state) do
     {:ok, native_state} =
       case ctx.pads[pad].options do
-        %{samples_per_frame: samples_per_frame, sample_rate: sample_rate} ->
+        %{frame_duration: frame_duration, sample_rate: sample_rate} ->
+          samples_per_frame =
+            (Membrane.Time.as_milliseconds(frame_duration, :round) * sample_rate)
+            |> div(1000)
+
           Native.update_audio_stream_format(
             sample_rate,
             opus.channels,
