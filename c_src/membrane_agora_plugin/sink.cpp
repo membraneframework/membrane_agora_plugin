@@ -159,9 +159,16 @@ UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
 
   if (codec == CODEC_AUDIO_AAC) {
     audioFrameInfo.codec = agora::rtc::AUDIO_CODEC_TYPE::AUDIO_CODEC_AACLC;
+    printf("\nDUPA NIF AAC\n\n");
+    fflush(stdout);
   } else if (codec == CODEC_AUDIO_OPUS) {
     audioFrameInfo.codec = agora::rtc::AUDIO_CODEC_TYPE::AUDIO_CODEC_OPUS;
+    printf("\nDUPA NIF OPUS\n\n");
+    fflush(stdout);
   }
+
+  printf("\nDUPA NIF AFTER\n\n");
+  fflush(stdout);
 
   if (state->audioEncodedFrameSender->sendEncodedAudioFrame(
           reinterpret_cast<uint8_t *>(payload->data), payload->size,
