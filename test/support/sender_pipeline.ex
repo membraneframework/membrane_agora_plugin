@@ -12,16 +12,24 @@ defmodule Membrane.Agora.Support.SenderPipeline do
   def handle_init(_ctx, opts) do
     user_id = "12"
 
-    audio_parser =
+    {audio_parser, sink_audio_options} =
       opts[:audio]
       |> String.split(".")
       |> List.last()
       |> case do
-        "aac" -> Membrane.AAC.Parser
-        "opus" -> Membrane.Opus.Parser
+        "aac" ->
+          {Membrane.AAC.Parser, []}
+
+        "opus" ->
+          {Membrane.Opus.Parser,
+           [
+             sample_rate: 48_000,
+             frame_duration: Membrane.Time.milliseconds(20)
+           ]}
       end
 
-    spec =
+    audio_parser_input_options =
+      spec =
       [
         child(%Membrane.File.Source{location: opts[:video]})
         |> child(%Membrane.H264.Parser{
@@ -38,12 +46,7 @@ defmodule Membrane.Agora.Support.SenderPipeline do
         child(%Membrane.File.Source{location: opts[:audio]})
         |> child(audio_parser)
         |> child(Membrane.Realtimer)
-        |> via_in(:audio,
-          options: %{
-            sample_rate: 48_000,
-            frame_duration: Membrane.Time.milliseconds(20)
-          }
-        )
+        |> via_in(:audio, options: sink_audio_options)
         |> get_child(:sink)
       ]
 
