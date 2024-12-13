@@ -45,6 +45,15 @@ defmodule Membrane.Agora.Support.SenderPipeline do
         }),
         child(%Membrane.File.Source{location: opts[:audio]})
         |> child(audio_parser)
+        |> case do
+          spec when parser == Membrane.AAC.Parser ->
+            spec
+
+          spec when parser == Membrane.Opus.Parser ->
+            spec
+            |> child(Membrane.Opus.Decoder)
+            |> child(Membrane.Opus.Encoder)
+        end
         |> child(Membrane.Realtimer)
         |> via_in(:audio, options: sink_audio_options)
         |> get_child(:sink)
