@@ -28,8 +28,7 @@ defmodule Membrane.Agora.Support.SenderPipeline do
            ]}
       end
 
-    audio_parser_input_options =
-      spec =
+    spec =
       [
         child(%Membrane.File.Source{location: opts[:video]})
         |> child(%Membrane.H264.Parser{

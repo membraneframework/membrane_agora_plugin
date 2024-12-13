@@ -117,6 +117,10 @@ defmodule Membrane.Agora.Sink do
             (Membrane.Time.as_milliseconds(frame_duration, :round) * sample_rate)
             |> div(1000)
 
+          IO.inspect({sample_rate, opus.channels, samples_per_frame},
+            label: "HANDLE STREAM FORMAT"
+          )
+
           Native.update_audio_stream_format(
             sample_rate,
             opus.channels,
@@ -153,6 +157,8 @@ defmodule Membrane.Agora.Sink do
         %Membrane.Opus{} -> :opus
         %Membrane.AAC{} -> :aac
       end
+
+    {stream_format, buffer} |> IO.inspect(label: "HANDLE BUFFER")
 
     :ok = Native.write_audio_data(buffer.payload, stream_format, state.native_state)
     {[], state}
