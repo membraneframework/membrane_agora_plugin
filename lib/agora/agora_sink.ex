@@ -7,6 +7,7 @@ defmodule Membrane.Agora.Sink do
 
   require Membrane.Pad, as: Pad
 
+  alias Membrane.{AAC, Opus}
   alias Membrane.Agora.Sink.Native
 
   def_input_pad :video,
@@ -17,7 +18,10 @@ defmodule Membrane.Agora.Sink do
   def_input_pad :audio,
     availability: :on_request,
     accepted_format: any_of(Membrane.AAC, Membrane.Opus),
-    flow_control: :auto
+    flow_control: :auto,
+    options: [
+      sample_rate: [default: nil]
+    ]
 
   def_options app_id: [
                 spec: String.t(),
@@ -54,7 +58,8 @@ defmodule Membrane.Agora.Sink do
       token: opts.token,
       channel_name: opts.channel_name,
       user_id: opts.user_id,
-      native_state: nil
+      native_state: nil,
+      last_frame_duration: nil
     }
 
     {[], state}
@@ -109,37 +114,13 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_stream_format(Pad.ref(:audio, _id) = pad, %Membrane.Opus{} = opus, ctx, state) do
-    {:ok, native_state} =
-      case ctx.pads[pad].options do
-        %{frame_duration: frame_duration, sample_rate: sample_rate} ->
-          samples_per_frame =
-            (Membrane.Time.as_milliseconds(frame_duration, :round) * sample_rate)
-            |> div(1000)
-
-          IO.inspect({sample_rate, opus.channels, samples_per_frame},
-            label: "HANDLE STREAM FORMAT"
-          )
-
-          Native.update_audio_stream_format(
-            sample_rate,
-            opus.channels,
-            samples_per_frame,
-            state.native_state
-          )
-
-        pad_options ->
-          raise """
-          Pad options has to have :samples_per_frame and :sample_rate options when the stream format is \
-          Membrane.Opus, but pad #{inspect(pad)} has options #{inspect(pad_options)}
-          """
-      end
-
-    {[], %{state | native_state: native_state}}
+  def handle_stream_format(Pad.ref(:audio, _id), %Opus{}, ctx, state) do
+    # audio stream format will be updated in handle_buffer/4
+    {[], state}
   end
 
   @impl true
-  def handle_buffer(Pad.ref(:video, _id), buffer, _ctx, state) do
+  def handle_buffer(Pad.ref(:video, _id) = pad, buffer, ctx, state) do
     :ok =
       Native.write_video_data(
         buffer.payload,
@@ -154,13 +135,35 @@ defmodule Membrane.Agora.Sink do
   def handle_buffer(Pad.ref(:audio, _id) = pad, buffer, ctx, state) do
     stream_format =
       case ctx.pads[pad].stream_format do
-        %Membrane.Opus{} -> :opus
-        %Membrane.AAC{} -> :aac
+        %Opus{} -> :opus
+        %AAC{} -> :aac
       end
 
-    {stream_format, buffer} |> IO.inspect(label: "HANDLE BUFFER")
+    state =
+      if stream_format == :opus and buffer.metadata.duration != state.last_frame_duration do
+        update_frame_duration(buffer.metadata.duration, pad, ctx, state)
+      else
+        state
+      end
 
     :ok = Native.write_audio_data(buffer.payload, stream_format, state.native_state)
     {[], state}
+  end
+
+  defp update_frame_duration(frame_duration, pad, ctx, state) do
+    pad_data = ctx.pads[pad]
+
+    sample_rate = pad_data.options.sample_rate
+    samples_per_frame = (frame_duration * sample_rate) |> div(1000)
+
+    {:ok, native_state} =
+      Native.update_audio_stream_format(
+        sample_rate,
+        pad_data.stream_format.channels,
+        samples_per_frame,
+        state.native_state
+      )
+
+    %{state | native_state: native_state, last_frame_duration: frame_duration}
   end
 end

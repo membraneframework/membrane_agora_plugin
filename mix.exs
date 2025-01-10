@@ -43,6 +43,7 @@ defmodule Membrane.Agora.Mixfile do
       {:membrane_aac_format, "~> 0.8.0"},
       {:membrane_opus_format, "~> 0.3.0"},
       {:membrane_raw_audio_format, "~> 0.12.0"},
+      {:membrane_ogg_plugin, "~> 0.5.0"},
       {:unifex, "~> 1.1"},
       {:membrane_file_plugin, "~> 0.16.0", only: :test},
       {:membrane_h26x_plugin, "~> 0.10.0", only: :test},

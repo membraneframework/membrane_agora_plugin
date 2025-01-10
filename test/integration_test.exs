@@ -3,8 +3,9 @@ defmodule Membrane.Agora.IntegrationTest do
   import Membrane.Testing.Assertions
   alias Membrane.Agora.Support.{ReceiverPipeline, SenderPipeline}
 
-  for audio_codec <- [:opus] do
+  for audio_codec <- [:opus, :aac] do
     @tag :tmp_dir
+    @tag audio_codec
     test "if the data is sent to Agora properly when audio codec is #{audio_codec}", %{
       tmp_dir: dir
     } do
@@ -14,9 +15,15 @@ defmodule Membrane.Agora.IntegrationTest do
       input_video = "test/fixtures/in_video.h264"
       output_video = "#{dir}/video.h264"
       reference_video = input_video
+      audio_codec = unquote(audio_codec)
 
-      input_audio = "test/fixtures/in_audio.#{unquote(audio_codec)}"
-      output_audio = "#{dir}/audio_#{unquote(audio_codec)}.pcm"
+      input_audio =
+        case audio_codec do
+          :aac -> "test/fixtures/in_audio.aac"
+          :opus -> "test/fixtures/in_audio_opus.ogg"
+        end
+
+      output_audio = "#{dir}/audio_#{audio_codec}.pcm"
       reference_audio = "test/fixtures/in_audio.pcm"
 
       {:ok, _supervisor, receiver_pipeline} =
@@ -30,6 +37,8 @@ defmodule Membrane.Agora.IntegrationTest do
           module: SenderPipeline,
           custom_args: [audio: input_audio, video: input_video, framerate: framerate]
         )
+
+      Process.sleep(3000)
 
       assert_start_of_stream(receiver_pipeline, :video_sink, :input, 10_000)
       assert_start_of_stream(receiver_pipeline, :audio_sink)
