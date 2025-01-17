@@ -40,7 +40,7 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
             raise("""
             Framerate assertion failed.
             Value: #{abs(state.interval * state.how_many_frames - buffer.dts)}
-            Tolerance: #{5 * @tolerance}
+            Tolerance: #{@tolerance}
             """)
       end
 
