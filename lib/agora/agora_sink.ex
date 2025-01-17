@@ -20,7 +20,10 @@ defmodule Membrane.Agora.Sink do
     accepted_format: any_of(Membrane.AAC, Membrane.Opus),
     flow_control: :auto,
     options: [
-      sample_rate: [default: nil]
+      sample_rate: [
+        spec: pos_integer(),
+        default: 48_000
+      ]
     ]
 
   def_options app_id: [
@@ -153,7 +156,7 @@ defmodule Membrane.Agora.Sink do
   defp update_frame_duration(frame_duration, pad, ctx, state) do
     pad_data = ctx.pads[pad]
 
-    sample_rate = pad_data.options.sample_rate
+    sample_rate = pad_data.options.sample_rate |
     samples_per_frame = (frame_duration * sample_rate) |> div(1000)
 
     {:ok, native_state} =
