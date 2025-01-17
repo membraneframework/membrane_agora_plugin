@@ -22,7 +22,15 @@ defmodule Membrane.Agora.Sink do
     options: [
       sample_rate: [
         spec: pos_integer(),
-        default: 48_000
+        default: 48_000,
+        description: """
+        Sample rate of the audio stream going through :audio pad.
+
+        Used only if the audio codec is `Membrane.Opus`. If the audio codec is
+        `Membrane.AAC`, sample rate value will be passed in the stream format.
+
+        Defaults to 48 000.
+        """
       ]
     ]
 
@@ -117,13 +125,13 @@ defmodule Membrane.Agora.Sink do
   end
 
   @impl true
-  def handle_stream_format(Pad.ref(:audio, _id), %Opus{}, ctx, state) do
+  def handle_stream_format(Pad.ref(:audio, _id), %Opus{}, _ctx, state) do
     # audio stream format will be updated in handle_buffer/4
     {[], state}
   end
 
   @impl true
-  def handle_buffer(Pad.ref(:video, _id) = pad, buffer, ctx, state) do
+  def handle_buffer(Pad.ref(:video, _id), buffer, _ctx, state) do
     :ok =
       Native.write_video_data(
         buffer.payload,
@@ -156,7 +164,7 @@ defmodule Membrane.Agora.Sink do
   defp update_frame_duration(frame_duration, pad, ctx, state) do
     pad_data = ctx.pads[pad]
 
-    sample_rate = pad_data.options.sample_rate |
+    sample_rate = pad_data.options.sample_rate
     samples_per_frame = (frame_duration * sample_rate) |> div(1000)
 
     {:ok, native_state} =
