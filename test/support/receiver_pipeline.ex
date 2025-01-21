@@ -59,7 +59,6 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
     end
   end
 
-
   defmodule FrameratePrinter do
     @moduledoc false
     alias Membrane.Agora.Support.ReceiverPipeline.FrameratePrinter
