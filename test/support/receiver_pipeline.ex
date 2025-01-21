@@ -4,8 +4,65 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
   use Membrane.Pipeline
   alias Membrane.Agora.TokenGenerator
 
+  defmodule Tee do
+    use Membrane.Filter
+
+    def_input_pad :input, accepted_format: _any
+    def_output_pad :output, accepted_format: _any, availability: :on_request
+
+    @impl true
+    def handle_buffer(:input, buffer, _ctx, state), do: {[forward: buffer], state}
+  end
+
   defmodule FramerateAsserter do
     @moduledoc false
+    use Membrane.Filter
+
+    @tolerance Membrane.Time.milliseconds(500)
+
+    def_input_pad :input, accepted_format: _any, flow_control: :auto
+    def_output_pad :output, accepted_format: _any, flow_control: :auto
+
+    def_options framerate: []
+
+    @impl true
+    def handle_init(_ctx, opts) do
+      {num, den} = opts.framerate
+      interval = Membrane.Time.seconds(Ratio.new(den, num))
+      {[], %{interval: interval, last_timestamp: nil, how_many_frames: 0}}
+    end
+
+    @impl true
+    def handle_buffer(:input, buffer, _ctx, state) do
+      if state.last_timestamp do
+        diff = buffer.dts - state.last_timestamp
+
+        unless abs(diff - state.interval) < @tolerance,
+          do:
+            raise("""
+            Framerate assertion failed.
+            Value: #{abs(diff - state.interval)}
+            Tolerance: #{@tolerance}
+            """)
+
+        unless abs(state.interval * state.how_many_frames - buffer.dts) < @tolerance,
+          do:
+            raise("""
+            Framerate assertion failed.
+            Value: #{abs(state.interval * state.how_many_frames - buffer.dts)}
+            Tolerance: #{@tolerance}
+            """)
+      end
+
+      {[buffer: {:output, buffer}],
+       %{state | last_timestamp: buffer.dts, how_many_frames: state.how_many_frames + 1}}
+    end
+  end
+
+
+  defmodule FrameratePrinter do
+    @moduledoc false
+    alias Membrane.Agora.Support.ReceiverPipeline.FrameratePrinter
     use Membrane.Filter
 
     @tolerance Membrane.Time.milliseconds(500)
@@ -90,6 +147,7 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
     spec =
       get_child(:dispatcher_audio)
       |> via_out(Pad.ref(:output, user_id))
+      |> child(:tee, Tee)
       |> child(:audio_sink, %Membrane.File.Sink{location: state.audio})
 
     {[spec: spec], state}

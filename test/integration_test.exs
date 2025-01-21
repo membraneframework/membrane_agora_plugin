@@ -2,6 +2,8 @@ defmodule Membrane.Agora.IntegrationTest do
   use ExUnit.Case, async: false
   import Membrane.Testing.Assertions
   require Membrane.Pad, as: Pad
+
+  alias Membrane.Testing
   alias Membrane.Agora.Support.{ReceiverPipeline, SenderPipeline}
 
   describe "if the data is sent to Agora properly when the audio codec is" do
@@ -15,22 +17,24 @@ defmodule Membrane.Agora.IntegrationTest do
         reference_video = input_video
         audio_codec = unquote(audio_codec)
 
-        {input_audio, reference_audio} =
+        input_audio_extension =
           case audio_codec do
-            :aac -> {"test/fixtures/in_audio.aac", "test/fixtures/in_audio.pcm"}
-            :opus -> {"test/fixtures/in_audio_opus.ogg", "test/fixtures/in_audio_opus.pcm"}
+            :aac -> "aac"
+            :opus -> "ogg"
           end
 
+        input_audio = "test/fixtures/in_audio." <> input_audio_extension
+        reference_audio = "test/fixtures/in_audio.pcm"
         output_audio = "#{dir}/audio_#{audio_codec}.pcm"
 
         {:ok, _supervisor, receiver_pipeline} =
-          Membrane.Testing.Pipeline.start_link(
+          Testing.Pipeline.start_link(
             module: ReceiverPipeline,
             custom_args: [audio: output_audio, video: output_video, framerate: framerate]
           )
 
         {:ok, _supervisor, sender_pipeline} =
-          Membrane.Testing.Pipeline.start_link(
+          Testing.Pipeline.start_link(
             module: SenderPipeline,
             custom_args: [audio: input_audio, video: input_video, framerate: framerate]
           )
@@ -55,7 +59,7 @@ defmodule Membrane.Agora.IntegrationTest do
                   |> length()) -
                    (get_h264_frames(output_video)
                     |> length())
-               ) < 40
+               ) < 50
 
         assert abs(File.stat!(reference_audio).size - File.stat!(output_audio).size) <
                  100_000

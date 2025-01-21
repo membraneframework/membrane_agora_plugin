@@ -192,13 +192,13 @@ void handle_destroy_state(UnifexEnv *env, SinkState *state) {
       AG_LOG(ERROR, "Failed to disconnect from Agora channel!");
       return;
     }
-    AG_LOG(INFO, "Disconnected from Agora channel successfully");
+    AG_LOG(INFO, "[Sink] Disconnected from Agora channel successfully");
     state->connection = NULL;
   }
 
   if (state->service) {
     state->service->release();
-    AG_LOG(INFO, "Agora service released successfully");
+    AG_LOG(INFO, "[Sink] Agora service released successfully");
     state->service = NULL;
   }
 }
