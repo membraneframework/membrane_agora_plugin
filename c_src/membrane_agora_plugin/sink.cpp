@@ -163,8 +163,8 @@ UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
   } else if (codec == CODEC_AUDIO_OPUS) {
     audioFrameInfo.codec = agora::rtc::AUDIO_CODEC_TYPE::AUDIO_CODEC_OPUS;
   } else {
-    AG_LOG("[WARNING] Audio codec passed to sink is neither AAC nor Opus, but "
-           "only these two values are supported for now.");
+    AG_LOG(WARNING, "Audio codec passed to sink is neither AAC nor Opus, but "
+                    "only these two values are supported for now.");
   }
 
   if (state->audioEncodedFrameSender->sendEncodedAudioFrame(
