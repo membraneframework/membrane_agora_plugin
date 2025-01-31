@@ -24,9 +24,10 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   scfg.enableVideo = true;
   scfg.useStringUid = false;
   if (state->service->initialize(scfg) != agora::ERR_OK) {
-    AG_LOG(ERROR, "Failed to initialize sink service");
+    AG_LOG(ERROR, "Failed to initialize Agora service in sink");
     unifex_release_state(env, state);
-    return create_result_error(env, "Failed to initialize service");
+    return create_result_error(env,
+                               "Failed to initialize Agora service in sink");
   }
 
   // connection configuration
@@ -161,6 +162,9 @@ UNIFEX_TERM write_audio_data(UnifexEnv *env, UnifexPayload *payload,
     audioFrameInfo.codec = agora::rtc::AUDIO_CODEC_TYPE::AUDIO_CODEC_AACLC;
   } else if (codec == CODEC_AUDIO_OPUS) {
     audioFrameInfo.codec = agora::rtc::AUDIO_CODEC_TYPE::AUDIO_CODEC_OPUS;
+  } else {
+    AG_LOG("[WARNING] Audio codec passed to sink is neither AAC nor Opus, but "
+           "only these two values are supported for now.");
   }
 
   if (state->audioEncodedFrameSender->sendEncodedAudioFrame(

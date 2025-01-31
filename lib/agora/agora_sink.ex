@@ -126,7 +126,7 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_stream_format(Pad.ref(:audio, _id), %Opus{}, _ctx, state) do
-    # audio stream format will be updated in handle_buffer/4
+    # when audio codec is Opus, Native.update_audio_stream_format/4 is called in handle_buffer/4
     {[], state}
   end
 

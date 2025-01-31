@@ -19,10 +19,11 @@ UNIFEX_TERM create(UnifexEnv *env, char *appId, char *token, char *channelId,
   scfg.enableVideo = true;
   scfg.useStringUid = false;
   if (state->service->initialize(scfg) != agora::ERR_OK) {
-    AG_LOG(ERROR, "Failed to initialize source service");
+    AG_LOG(ERROR, "Failed to initialize Agora service in source");
     state->service = NULL;
     unifex_release_state(env, state);
-    return create_result_error(env, "Failed to initialize service");
+    return create_result_error(env,
+                               "Failed to initialize Agora service in source");
   }
 
   // connection configuration
@@ -97,13 +98,13 @@ void handle_destroy_state(UnifexEnv *env, SourceState *state) {
 
   if (state->localUserObserver)
     state->localUserObserver.reset();
-  
+
   if (state->videoEncodedFrameObserver)
     state->videoEncodedFrameObserver.reset();
-  
+
   if (state->audioFrameObserver)
     state->audioFrameObserver.reset();
-  
+
   if (state->connection) {
     if (state->connection->disconnect()) {
       AG_LOG(ERROR, "Failed to disconnect from Agora channel!");
