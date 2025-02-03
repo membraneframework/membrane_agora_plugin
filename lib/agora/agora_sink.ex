@@ -7,7 +7,7 @@ defmodule Membrane.Agora.Sink do
 
   require Membrane.Pad, as: Pad
 
-  alias Membrane.{AAC, Opus}
+  alias Membrane.{AAC, Buffer, Opus}
   alias Membrane.Agora.Sink.Native
 
   def_input_pad :video,
@@ -70,7 +70,8 @@ defmodule Membrane.Agora.Sink do
       channel_name: opts.channel_name,
       user_id: opts.user_id,
       native_state: nil,
-      last_frame_duration: nil
+      last_frame_duration: nil,
+      opus_queue: []
     }
 
     {[], state}
@@ -144,21 +145,67 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_buffer(Pad.ref(:audio, _id) = pad, buffer, ctx, state) do
-    stream_format =
-      case ctx.pads[pad].stream_format do
-        %Opus{} -> :opus
-        %AAC{} -> :aac
-      end
+    # stream_format =
+    #   case ctx.pads[pad].stream_format do
+    #     %Opus{} -> :opus
+    #     %AAC{} -> :aac
+    #   end
+
+    # state =
+    #   if stream_format == :opus and buffer.metadata.duration != state.last_frame_duration do
+    #     update_frame_duration(buffer.metadata.duration, pad, ctx, state)
+    #   else
+    #     state
+    #   end
+
+    # :ok = Native.write_audio_data(buffer.payload, stream_format, state.native_state)
+    # {[], state}
 
     state =
-      if stream_format == :opus and buffer.metadata.duration != state.last_frame_duration do
-        update_frame_duration(buffer.metadata.duration, pad, ctx, state)
-      else
-        state
+      case ctx.pads[pad].stream_format do
+        %Opus{} -> handle_opus_buffer(pad, buffer, ctx, state)
+        %AAC{} -> handle_aac_buffer(pad, buffer)
       end
 
-    :ok = Native.write_audio_data(buffer.payload, stream_format, state.native_state)
     {[], state}
+  end
+
+  defp handle_opus_buffer(pad, buffer, ctx, state) do
+    opus_queue =
+      case state.opus_queue do
+        [%Buffer{} = previous] ->
+          duration = buffer.pts - previous.pts
+          previous = previous |> put_in([:metadata, :duration], duration)
+          [previous, buffer]
+
+        [] ->
+          [buffer]
+      end
+
+    {buffers_with_duration, opus_queue} =
+      opus_queue
+      |> Enum.split_while(&is_map_key(&1.metadata, :duration))
+
+    state =
+      buffers_with_duration
+      |> Enum.reduce(state, fn buffer, state ->
+        state =
+          if buffer.metadata.duration != state.last_frame_duration do
+            update_frame_duration(buffer.metadata.duration, pad, ctx, state)
+          else
+            state
+          end
+
+        :ok = Native.write_audio_data(buffer.payload, :opus, state.native_state)
+        state
+      end)
+
+    %{state | opus_queue: opus_queue}
+  end
+
+  defp handle_aac_buffer(buffer, state) do
+    :ok = Native.write_audio_data(buffer.payload, :aac, state.native_state)
+    state
   end
 
   defp update_frame_duration(frame_duration, pad, ctx, state) do
