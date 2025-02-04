@@ -164,7 +164,7 @@ defmodule Membrane.Agora.Sink do
     state =
       case ctx.pads[pad].stream_format do
         %Opus{} -> handle_opus_buffer(pad, buffer, ctx, state)
-        %AAC{} -> handle_aac_buffer(pad, buffer)
+        %AAC{} -> handle_aac_buffer(buffer, state)
       end
 
     {[], state}
