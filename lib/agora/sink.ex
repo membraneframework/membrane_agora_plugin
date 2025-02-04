@@ -191,8 +191,11 @@ defmodule Membrane.Agora.Sink do
     opus_queue =
       case state.opus_queue do
         [%Buffer{} = previous] ->
-          duration = buffer.pts - previous.pts
-          previous = previous |> put_in([:metadata, :duration], duration)
+          previous_metadata =
+            previous.metadata
+            |> Map.put(:duration, buffer.pts - previous.pts)
+
+          previous = %{previous | metadata: previous_metadata}
           [previous, buffer]
 
         [] ->
