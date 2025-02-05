@@ -162,22 +162,6 @@ defmodule Membrane.Agora.Sink do
 
   @impl true
   def handle_buffer(Pad.ref(:audio, _id) = pad, buffer, ctx, state) do
-    # stream_format =
-    #   case ctx.pads[pad].stream_format do
-    #     %Opus{} -> :opus
-    #     %AAC{} -> :aac
-    #   end
-
-    # state =
-    #   if stream_format == :opus and buffer.metadata.duration != state.last_frame_duration do
-    #     update_frame_duration(buffer.metadata.duration, pad, ctx, state)
-    #   else
-    #     state
-    #   end
-
-    # :ok = Native.write_audio_data(buffer.payload, stream_format, state.native_state)
-    # {[], state}
-
     state =
       case ctx.pads[pad].stream_format do
         %Opus{} -> handle_opus_buffer(pad, buffer, ctx, state)
