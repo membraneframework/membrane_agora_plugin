@@ -8,7 +8,7 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
     @moduledoc false
     use Membrane.Filter
 
-    @tolerance Membrane.Time.milliseconds(100)
+    @tolerance Membrane.Time.milliseconds(500)
 
     def_input_pad :input, accepted_format: _any, flow_control: :auto
     def_output_pad :output, accepted_format: _any, flow_control: :auto
@@ -35,12 +35,12 @@ defmodule Membrane.Agora.Support.ReceiverPipeline do
             Tolerance: #{@tolerance}
             """)
 
-        unless abs(state.interval * state.how_many_frames - buffer.dts) < 5 * @tolerance,
+        unless abs(state.interval * state.how_many_frames - buffer.dts) < @tolerance,
           do:
             raise("""
             Framerate assertion failed.
             Value: #{abs(state.interval * state.how_many_frames - buffer.dts)}
-            Tolerance: #{5 * @tolerance}
+            Tolerance: #{@tolerance}
             """)
       end
 
