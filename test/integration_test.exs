@@ -3,8 +3,8 @@ defmodule Membrane.Agora.IntegrationTest do
   import Membrane.Testing.Assertions
   require Membrane.Pad, as: Pad
 
-  alias Membrane.Testing
   alias Membrane.Agora.Support.{ReceiverPipeline, SenderPipeline}
+  alias Membrane.Testing
 
   describe "if the data is sent to Agora properly when the audio codec is" do
     for audio_codec <- [:opus, :aac] do
