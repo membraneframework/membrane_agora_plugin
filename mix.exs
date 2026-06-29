@@ -51,7 +51,7 @@ defmodule Membrane.Agora.Mixfile do
       {:membrane_aac_plugin, "~> 0.18.1", only: :test},
       {:membrane_opus_plugin, "~> 0.20.4", only: :test},
       {:membrane_realtimer_plugin, "~> 0.9.0", only: :test},
-      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
+      {:ex_doc, ">= 0.40.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}
     ]
